@@ -7,20 +7,20 @@ html
     link(rel="stylesheet" href='/style.css')
   body.js-body
     header
-      img.logo(src='/buzzer-logo.svg')
+      img.logo(src="/images/dirtytalk-fs.jpg" class="header-image")
 
     div.container
       form.view.js-join
-        img(src="/lets-play.png" class="main-image")
+        img(src="/images/dirtytalk-fs.jpg" class="main-image")
         h2="Let's play!"
         input(type='text' name='name' placeholder='Your name' required='required')
-        input(type='number' name='team' placeholder='Your team number' required='required')
         button(type='submit')='Join!'
 
       div.view.js-joined.hidden
-        button.js-buzzer.buzzer()='Buzz!!!'
+        div.js-clock="--:--"
         p.js-joined-info=""
-        button.js-edit.secondary='Change teams'
+        h2.js-lastbuzz=''
+        button.js-buzzer.buzzer()='Buzz!!!'
 
     script(src='/socket.io/socket.io.js')
     script(src='/join.js')

@@ -6,14 +6,23 @@ html
     link(rel="stylesheet" href='/style.css')
   body
     header
-      img.logo(src='/buzzer-logo.svg')
+      img.logo(src="/images/dirtytalk-fs.jpg" class="header-image")
 
     div.container
+      button.js-subtime(class="smallbutton")='-'
+      div.js-clock='--:--'
+      button.js-addtime(class="smallbutton")='+'
       h2.js-active=`${users.length} joined`
-      ol.js-buzzes
-        each buzz in buzzes
-          li=`${buzz.name} on Team ${buzz.team}`
+      div.js-scoreboard=''
+      h2.js-lastbuzz=''
+      ol.js-users
+        each user in users
+          li=`${user.name}`
       button.js-clear='Clear buzzes'
+      button.js-startclock='Start Clock'
+      button.js-pauseclock='Pause Clock'
+      button.js-resetclock='Reset Clock'
+      button.js-resetscores='Reset Scores'
 
     script(src='/socket.io/socket.io.js')
     script(src='/host.js')

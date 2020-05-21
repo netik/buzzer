@@ -9,8 +9,10 @@
   "author": "Dan Farrelly <daniel.j.farrelly@gmail.com> (http://danfarrelly.nyc)",
   "license": "MIT",
   "dependencies": {
-    "express": "4.14.1",
-    "pug": "2.0.0-beta11",
-    "socketio": "1.0.0"
+    "express": "^4.17.1",
+    "npmlog-ts": "0.0.1",
+    "pug": "^2.0.4",
+    "socketio": "1.0.0",
+    "uuid": "^8.0.0"
   }
 }
