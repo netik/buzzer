@@ -71,8 +71,8 @@ app.get('/status', function(req, res){
 });
 
 io.on('connection', (socket) => {
-  var clientIp = socket.request.connection.remoteAddress;
-  log.info(`clientIP - (socket ${socket.id}) connected`);
+  var clientIP = socket.request.connection.remoteAddress;
+  log.info(`${clientIP} - (socket ${socket.id}) connected`);
 
   statObj.connections++;
   statObj.connected++;
@@ -87,6 +87,9 @@ io.on('connection', (socket) => {
 
     // it's not possible to transmit maps so we have to marshall them into a string, and then array...
     let transitString = JSON.stringify(Array.from(data.users));
+    // tell them it worked
+    socket.emit('joined', user);
+    // tell everyone
     io.emit('active', transitString);
     log.info(`${socket.id}: ${user.name} joined!`)
 
