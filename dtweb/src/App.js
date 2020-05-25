@@ -6,38 +6,77 @@ import LoginBox from "./LoginBox";
 import Buzzer from "./Buzzer";
 import TimeClock from "./TimeClock";
 import ScoreBoard from "./ScoreBoard";
+import {
+  Alert
+} from "reactstrap";
 
 const ENDPOINT="http://localhost:8090";
 
+// set up our heartbeat
 function App() {
-  const [mainSocket, setMainSocket] = useState({});
-  const [isOnline, setIsOnline] = useState(null);
+  const [mainSocket, setMainSocket] = useState(null);
+  const [socketError, setSocketError] = useState(null);
   const [timeRemain, setTimeRemain] = useState(0);
   const [lastBuzz, setLastBuzz] = useState(null);
   const [buzzerDisabled, setBuzzerDisabled] = useState(true);
   const [user, setUser] = useState(null);
+  const [scores, setScores] = useState(null);
+  const [socketTimer, setSocketTimer] = useState(null);
   
+  // this function keeps track of the last time we've seen a server tick
+  // if it exceeds 2 seconds, we alarm.
+  let socketWatchdog = 0;
+
   // in this simple app the top-level App class will manage state and 
   // pass the socket down to children for communications with the server
-  useEffect(() => { 
-    if (! isOnline) {
+  // our entire API is over socket.io, we have nothing more.
+  useEffect(function setupWatchdogTimer() {
+    function fireClientTick() { 
+      console.log('client tick');
+      socketWatchdog++;
+      if (socketWatchdog > 2) {
+        setSocketError('No heartbeat from server. Please wait a bit and try again, or reload the page.');
+      }
+    }
+
+    if (!socketTimer) {
+      setSocketTimer(setInterval(fireClientTick, 1000));
+    }
+  }, [socketTimer]);
+
+  useEffect(function setupSocket() { 
+    if (! mainSocket) {
+      console.log('socketsetup');
+
       const s = io(ENDPOINT);
-      setIsOnline(true);
       setMainSocket(s);
 
       // handle socket ops here and update game state
       s.on('connect', () => {
         console.log('connected');
+        setSocketError(null);
       });
 
       s.on('tick', (data) => {
         setTimeRemain(data.timeRemain);
+        socketWatchdog = 0; // all good, we're hearing heartbeats.
       });
 
       s.on('joined', (data) => {
         console.log('join ok!');
         console.log(data);
         setUser(data);
+
+        // ask the server for the current scores.
+        s.emit('getscores');
+      });
+
+      s.on('scoreupdate', (data) => {
+        console.log('scoreupdate');
+        console.log(data);
+
+        const myMap = new Map(JSON.parse(data));
+        setScores(myMap);
       });
 
       s.on('lockout', (data) => {
@@ -55,25 +94,44 @@ function App() {
           setLastBuzz(null);
         }
       });
-    }
-  },[isOnline, timeRemain, lastBuzz, buzzerDisabled, user]);
 
-  // still establishing a connection
-  if (isOnline === null) { 
-    return 'Loading...';
+      // after all that, can we join?
+      let prevUser;
+      
+      if (sessionStorage.getItem('user')) {
+        prevUser = JSON.parse(sessionStorage.getItem('user'))
+      }
+      
+      if (prevUser) {
+        // TODO: Security goes here. 
+        console.log('using prior login...');
+        setUser(prevUser);
+        // join and ask the server for the current scores.
+        s.emit('join', { name: prevUser.name });
+
+        s.emit('getscores');
+      }
+    }
+  },[mainSocket, timeRemain, lastBuzz, buzzerDisabled, user]);
+
+  // render -------------------------------------------------------
+  let sockErrorComp = null;
+  if (socketError != null) {
+    sockErrorComp = (<Alert color="danger">{socketError}</Alert>);
   }
 
   if (user !== null) { 
     return (
       <div className="App">
         <NavBar socket={mainSocket} user={user}/>
-        <TimeClock 
-          socket={mainSocket} 
-          user={user} 
-          timeRemain={timeRemain} 
-          buzzerDisabled={buzzerDisabled}/>
-        <ScoreBoard socket={mainSocket} user={user} buzzerDisabled={buzzerDisabled}/>
-        <Buzzer socket={mainSocket} user={user} buzzerDisabled={buzzerDisabled}/>
+          {sockErrorComp}
+          <TimeClock 
+            socket={mainSocket} 
+            user={user} 
+            timeRemain={timeRemain} 
+            buzzerDisabled={buzzerDisabled}/>
+          <ScoreBoard socket={mainSocket} user={user} scores={scores} buzzerDisabled={buzzerDisabled}/>
+          <Buzzer socket={mainSocket} user={user} buzzerDisabled={buzzerDisabled}/>
      </div>
     );
   }
@@ -81,6 +139,7 @@ function App() {
   return (
     <div className="App">
       <NavBar user={user} />
+      {sockErrorComp}
       <LoginBox socket={mainSocket} user={user}/>
     </div>
   );

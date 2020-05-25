@@ -24,7 +24,8 @@ var statObj = { 'connections' : 0,
 		'msg_subscribe' : 0,
 		'msg_unsubscribe' : 0,
 		'msg_disconnect' : 0,
-		'msg_chat' : 0,
+    'msg_chat' : 0,
+    'msg_getscores' : 0,
 		'noauth' : 0,
 		'uptime' : 0,
 		'valid_hash' : 0 };
@@ -83,7 +84,7 @@ io.on('connection', (socket) => {
     statObj.msg_join++;
 
     data.users.set(socket.id, user);
-    data.scores.set(socket.id, 0);
+    data.scores.set(socket.id, { name: user.name, score: 0 });
 
     // it's not possible to transmit maps so we have to marshall them into a string, and then array...
     let transitString = JSON.stringify(Array.from(data.users));
@@ -112,6 +113,13 @@ io.on('connection', (socket) => {
     io.emit('lastbuzz', { id: data.lastbuzz, name: data.users.get(socket.id).name });
     log.info(`${socket.id}: ${data.users.get(socket.id).name} buzzed in!`);
   })
+
+  socket.on('getscores', () => {
+    statObj.msg_getscores++;
+    // for right now this message sends everyone the scores.
+    let transitString = JSON.stringify(Array.from(data.scores));
+    socket.emit('scoreupdate', transitString);
+  });
 
   socket.on('clear', () => {
     statObj.msg_clear++;

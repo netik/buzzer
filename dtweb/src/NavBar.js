@@ -14,7 +14,7 @@ const NavBar = (props) => {
 
   return (
     <div>
-      <Navbar expand="md" className="navbar navbar-dark bg-dark">
+      <Navbar color="primary" dark expand="md">
         <NavbarBrand href="#">Dirty Talk Game Show</NavbarBrand>
         <NavbarToggler onClick={toggle} />
         <Collapse isOpen={isOpen} navbar>
