@@ -22,19 +22,17 @@ function App() {
   const [user, setUser] = useState(null);
   const [scores, setScores] = useState(null);
   const [socketTimer, setSocketTimer] = useState(null);
-  
-  // this function keeps track of the last time we've seen a server tick
-  // if it exceeds 2 seconds, we alarm.
-  let socketWatchdog = 0;
+  const [socketWatchdog, setSocketWatchdog] = useState(0);
 
   // in this simple app the top-level App class will manage state and 
   // pass the socket down to children for communications with the server
   // our entire API is over socket.io, we have nothing more.
   useEffect(function setupWatchdogTimer() {
     function fireClientTick() { 
-      console.log('client tick');
-      socketWatchdog++;
-      if (socketWatchdog > 2) {
+      const newVal = socketWatchdog + 1;
+      setSocketWatchdog(newVal);
+
+      if (newVal > 2) {
         setSocketError('No heartbeat from server. Please wait a bit and try again, or reload the page.');
       }
     }
@@ -42,7 +40,7 @@ function App() {
     if (!socketTimer) {
       setSocketTimer(setInterval(fireClientTick, 1000));
     }
-  }, [socketTimer]);
+  }, [socketTimer,socketWatchdog]);
 
   useEffect(function setupSocket() { 
     if (! mainSocket) {
@@ -59,7 +57,7 @@ function App() {
 
       s.on('tick', (data) => {
         setTimeRemain(data.timeRemain);
-        socketWatchdog = 0; // all good, we're hearing heartbeats.
+        setSocketWatchdog(0); // all good, we're hearing heartbeats.
       });
 
       s.on('joined', (data) => {
