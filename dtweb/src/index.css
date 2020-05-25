@@ -1,0 +1,32 @@
+body {
+  padding: 0;
+  margin: 0;
+  font-family: "Poppins", -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif,
+    "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", sans-serif;
+  /* background: linear-gradient(-45deg, #a6f4e5 0%, #23e6bf 47%); */
+  /* background-color: rgb(44, 75, 255); */
+  background-color: #0d0d0d;
+  color: #f2dff1;
+  text-align: center;
+}
+
+
+code {
+  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
+    monospace;
+}
+
+
+input[type="text"],
+input[type="number"] {
+  border: 1px solid #B8B8B8;
+}
+
+input[type="text"]:focus,
+input[type="number"]:focus,
+input[type="text"]:active,
+input[type="number"]:active {
+  border-color: #2c4bff;
+  box-shadow: 0 0 0 3px #ABB7FF;
+  outline: none;
+}
