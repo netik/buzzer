@@ -86,13 +86,13 @@ io.on('connection', (socket) => {
     data.users.set(socket.id, user);
     data.scores.set(socket.id, { name: user.name, score: 0 });
 
-    // it's not possible to transmit maps so we have to marshall them into a string, and then array...
-    let transitString = JSON.stringify(Array.from(data.users));
     // tell them it worked
     socket.emit('joined', user);
-    // tell everyone
-    io.emit('active', transitString);
+
+    // tell everyone else who is here
     log.info(`${socket.id}: ${user.name} joined!`)
+    let scoreTransit = JSON.stringify(Array.from(data.scores));
+    io.emit('scoreupdate', scoreTransit);
 
     // update this user on the current world-state
     socket.emit('lockout', data.lockout);
@@ -185,11 +185,8 @@ io.on('connection', (socket) => {
     data.users.delete(socket.id);
     data.scores.delete(socket.id);
     
-    let userTransit = JSON.stringify(Array.from(data.users));
-    io.emit('active', userTransit);
-
     let scoreTransit = JSON.stringify(Array.from(data.scores));
-    io.emit('scores', scoreTransit);
+    io.emit('scoreupdate', scoreTransit);
 
     log.info(`${socket.request.connection.remoteAddress} - (socket ${socket.id}) connected`);
   });
