@@ -1,5 +1,7 @@
 import React, { useState, useCallback } from 'react';
 import {
+  Row,
+  Col,
   Button
 } from "reactstrap";
 
@@ -25,12 +27,19 @@ const Buzzer = (props) => {
   }, [isSending, props.user, props.socket]) // update the callback if the state changes
 
   return (
-    <div>
-    <Button 
-      className="btn btn-outline-primary" 
+    <Row>
+      <Col className="text-center" sm="12">
+      <Button 
+      className="btn btn-danger btn-jumbo" 
       disabled={props.buzzerDisabled}
       onClick={handleBuzz}>Buzz</Button>
-    </div>
+      {! props.buzzerDisabled &&  
+        <p class="text-muted">
+         Hit the <i>Spacebar</i> or click Buzz to Buzz in now!
+        </p>
+      } 
+      </Col>
+    </Row>
   );
 }
 

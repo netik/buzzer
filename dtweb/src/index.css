@@ -1,0 +1,24 @@
+.btn-jumbo {
+  padding: 10px 20px;
+  margin: 30px;
+  font-size: 40px;
+  border-radius: 10px;
+  width: 50%;
+}
+
+.btn-jumbo:disabled {
+  background-color: #61606031;
+  outline-color: #44424222;
+}
+.txt-jumbo {
+  font-size: 75px;
+}
+
+.status-message {
+  font-size: 25px;
+  color: rgb(250, 38, 172);
+}
+
+.headerLogo {
+  width: 200px;
+}

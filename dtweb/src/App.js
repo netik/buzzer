@@ -1,9 +1,16 @@
 import React, { useState, useEffect } from "react";
+import {
+  BrowserRouter as BrowserRouter, 
+  Switch,
+  Route,
+  Link
+} from "react-router-dom";
 import './App.css';
 import io from 'socket.io-client';
 import NavBar from "./NavBar";
 import LoginBox from "./LoginBox";
 import Buzzer from "./Buzzer";
+import DTHeader from "./DTHeader";
 import TimeClock from "./TimeClock";
 import ScoreBoard from "./ScoreBoard";
 import {
@@ -17,6 +24,7 @@ function App() {
   const [mainSocket, setMainSocket] = useState(null);
   const [socketError, setSocketError] = useState(null);
   const [timeRemain, setTimeRemain] = useState(0);
+  const [isRunning, setIsRunning] = useState(false);
   const [lastBuzz, setLastBuzz] = useState(null);
   const [buzzerDisabled, setBuzzerDisabled] = useState(true);
   const [user, setUser] = useState(null);
@@ -57,12 +65,12 @@ function App() {
 
       s.on('tick', (data) => {
         setTimeRemain(data.timeRemain);
+        setIsRunning(data.isRunning);
         setSocketWatchdog(0); // all good, we're hearing heartbeats.
       });
 
       s.on('joined', (data) => {
         console.log('join ok!');
-        console.log(data);
         setUser(data);
 
         // ask the server for the current scores.
@@ -71,8 +79,6 @@ function App() {
 
       s.on('scoreupdate', (data) => {
         console.log('scoreupdate');
-        console.log(data);
-
         const myMap = new Map(JSON.parse(data));
         setScores(myMap);
       });
@@ -123,13 +129,22 @@ function App() {
       <div className="App">
         <NavBar socket={mainSocket} user={user}/>
           {sockErrorComp}
+          <DTHeader/>
           <TimeClock 
             socket={mainSocket} 
             user={user} 
+            isRunning={isRunning}
             timeRemain={timeRemain} 
             buzzerDisabled={buzzerDisabled}/>
-          <ScoreBoard socket={mainSocket} user={user} scores={scores} buzzerDisabled={buzzerDisabled}/>
-          <Buzzer socket={mainSocket} user={user} buzzerDisabled={buzzerDisabled}/>
+          <Buzzer 
+            socket={mainSocket} 
+            user={user} 
+            buzzerDisabled={buzzerDisabled}/>
+          <ScoreBoard 
+            socket={mainSocket} 
+            user={user} 
+            scores={scores} 
+            buzzerDisabled={buzzerDisabled}/>
      </div>
     );
   }
