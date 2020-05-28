@@ -4,6 +4,7 @@ import {
   Row,
   Col 
 } from 'reactstrap';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 
 const waitForHost = 'STOPPED - WAITING FOR HOST';
 
@@ -18,19 +19,26 @@ const TimeClock = (props) => {
   const [statusMessage, setStatusMessage] = useState(waitForHost);
   
   useEffect(() => {
+    if (props.lastBuzz) {
+      console.log(props.lastBuzz);
+      setStatusMessage(`${props.lastBuzz.name} buzzed in!`);
+      return;
+    }
     if (props.isRunning) {
       setStatusMessage('RUNNING');
     } else {
       setStatusMessage(waitForHost);
     } 
-  }, [props.isRunning]);
+  }, [props.isRunning, props.lastBuzz]);
 
   return (
     <Container>
     <Row>
       <Col className="text-center" sm="12">
        <div className="txt-jumbo">
-         {formatTime(props.timeRemain)}
+         <FontAwesomeIcon icon={ 
+           props.isRunning === true ? "play" : "pause"
+         }/>&nbsp;{formatTime(props.timeRemain)}
        </div>
        <h2 className="status-message">{statusMessage}</h2>
       </Col>

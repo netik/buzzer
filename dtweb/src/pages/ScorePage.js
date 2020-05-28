@@ -21,7 +21,8 @@ const ScorePage = (props) => {
     <DTHeader/>
     <TimeClock 
       socket={props.mainSocket} 
-      user={props.user} 
+      user={props.user}
+      lastBuzz={props.lastBuzz}
       isRunning={props.isRunning}
       timeRemain={props.timeRemain} 
       buzzerDisabled={props.buzzerDisabled}/>

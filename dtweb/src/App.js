@@ -9,6 +9,7 @@ import GamePage from './pages/GamePage';
 import ScorePage from './pages/ScorePage';
 import HostPage from './pages/HostPage';
 import LogoutPage from './pages/LogoutPage';
+import useInterval from './useInterval';
 
 import './App.css';
 import io from 'socket.io-client';
@@ -34,7 +35,6 @@ library.add(
   faHistory,
   faCircle
 );
-
 // API server
 const ENDPOINT="http://localhost:8090";
 
@@ -48,26 +48,19 @@ function App() {
   const [buzzerDisabled, setBuzzerDisabled] = useState(true);
   const [user, setUser] = useState(null);
   const [scores, setScores] = useState(null);
-  const [socketTimer, setSocketTimer] = useState(null);
   const [socketWatchdog, setSocketWatchdog] = useState(0);
 
   // in this simple app the top-level App class will manage state and 
   // pass the socket down to children for communications with the server
   // our entire API is over socket.io, we have nothing more.
-  useEffect(function setupWatchdogTimer() {
-    function fireClientTick() { 
-      const newVal = socketWatchdog + 1;
-      setSocketWatchdog(newVal);
+  useInterval(() =>{
+    setSocketWatchdog(socketWatchdog + 1);
 
-      if (newVal > 2) {
-        setSocketError('No heartbeat from server. Please wait a bit and try again, or reload the page.');
-      }
+    if (socketWatchdog > 2) {
+      console.log('no heartbeat!!')
+      setSocketError('No heartbeat from server. Please wait a bit and try again, or reload the page.');
     }
-
-    if (!socketTimer) {
-      setSocketTimer(setInterval(fireClientTick, 1000));
-    }
-  }, [socketTimer,socketWatchdog]);
+  },1000);
 
   useEffect(function setupSocket() { 
     if (! mainSocket) {
@@ -79,12 +72,13 @@ function App() {
       // handle socket ops here and update game state
       s.on('connect', () => {
         console.log('connected');
+        s.emit('getscores');
         setSocketError(null);
       });
 
       s.on('tick', (data) => {
         setTimeRemain(data.timeRemain);
-        setIsRunning(data.isRunning);
+        setIsRunning(data.clockRunning);
         setSocketWatchdog(0); // all good, we're hearing heartbeats.
       });
 
@@ -111,6 +105,7 @@ function App() {
       });
 
       s.on('lastbuzz', (data) => {
+        console.log(data);
         if (data !== null) {
           setLastBuzz(data);
         } else {

@@ -16,9 +16,37 @@ import {
 const HostPage = (props) => {
   let sockErrorComp = null;
 
+  const handleAddTime = () => {
+    props.mainSocket.emit('addtime');
+  };
+
+  const handleSubTime = () => {
+    props.mainSocket.emit('subtime');
+  };
+
+  // buttons
+  const handleClear = () => {
+   props.mainSocket.emit('clear')
+  };
+
+  const handleResetClock = () => {
+    props.mainSocket.emit('resetclock')
+  };
+
+  const handleStartClock = () => {
+    props.mainSocket.emit('startclock')
+  };
+  const handlePauseClock = () => {
+    props.mainSocket.emit('pauseclock')
+  };
+  const handleResetScores = () => {
+    props.mainSocket.emit('resetscores')
+  };
+  
   if (props.socketError != null) {
     sockErrorComp = (<Alert color="danger">{props.socketError}</Alert>);
   }
+
   return (
     <div>
     <NavBar socket={props.mainSocket} user={props.user}/>
@@ -27,6 +55,7 @@ const HostPage = (props) => {
     <TimeClock 
       socket={props.mainSocket} 
       user={props.user} 
+      lastBuzz={props.lastBuzz}
       isRunning={props.isRunning}
       timeRemain={props.timeRemain} 
       buzzerDisabled={props.buzzerDisabled}/>
@@ -34,31 +63,52 @@ const HostPage = (props) => {
     <Container>
         <Row className="mb-0 mb-md-3 text-center">
       <Col>
-    <Button color="primary" style={{"margin":"10px"}}>
+    <Button 
+       onClick={handleAddTime} 
+       color="primary" 
+       style={{"margin":"10px"}}>
       <FontAwesomeIcon icon="plus-circle"/> Add Time
     </Button>
     {' '}
-    <Button color="primary" style={{"margin":"10px"}}>
+    <Button 
+      onClick={handleSubTime}
+      color="primary" 
+      style={{"margin":"10px"}}>
      <FontAwesomeIcon icon="minus-circle"/> Subtract Time
     </Button>
     {' '}
-    <Button color="success" style={{"margin":"10px"}}>
+    <Button 
+      onClick={handleStartClock} 
+      color="success" 
+      style={{"margin":"10px"}}>
      <FontAwesomeIcon icon="play"/> Start Clock
     </Button>
     {' '}
-    <Button color="warning" style={{"margin":"10px"}}>
+    <Button 
+      onClick={handlePauseClock}
+      color="warning"
+      style={{"margin":"10px"}}>
       <FontAwesomeIcon icon="pause"/> Pause Clock
     </Button>
     {' '}
-    <Button color="success" style={{"margin":"10px"}}>
+    <Button
+      onClick={handleClear}
+      color="success"
+      style={{"margin":"10px"}}>
       <FontAwesomeIcon icon="circle"/> Clear Buzzes
     </Button>
     {' '}
-    <Button color="danger" style={{"margin":"10px"}}>
+    <Button
+      onClick={handleResetClock}
+      color="danger"
+      style={{"margin":"10px"}}>
       <FontAwesomeIcon icon="trash"/> Reset Clock
     </Button>
     {' '}
-    <Button color="danger" style={{"margin":"10px"}}>
+    <Button
+      onClick={handleResetScores}
+      color="danger"
+      style={{"margin":"10px"}}>
       <FontAwesomeIcon icon="trash"/> Reset Scores
     </Button>
     </Col>

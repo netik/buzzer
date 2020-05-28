@@ -136,7 +136,8 @@ io.on('connection', (socket) => {
     data.clockRunning = false;
     data.lockout = true;
     io.emit('lockout', data.lockout);
-
+    data.lastbuzz = undefined;
+    io.emit('lastbuzz', data.lastbuzz)
     io.emit('tick', { timeRemain: data.timeRemain, clockRunning: data.clockRunning });
     log.info(`Reset Clock`)
   });
@@ -149,7 +150,8 @@ io.on('connection', (socket) => {
       data.lockout = false;
       io.emit('lockout', data.lockout);
     }
-
+    data.lastbuzz = undefined;
+    io.emit('lastbuzz', data.lastbuzz)
     io.emit('tick', { timeRemain: data.timeRemain, clockRunning: data.clockRunning });
     log.info(`Start clock with ${data.timeRemain}`);
   });

@@ -32,6 +32,7 @@ const GamePage = (props) => {
       <TimeClock 
         socket={props.mainSocket} 
         user={props.user} 
+        lastBuzz={props.lastBuzz}
         isRunning={props.isRunning}
         timeRemain={props.timeRemain} 
         buzzerDisabled={props.buzzerDisabled}/>
