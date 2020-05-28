@@ -1,21 +1,16 @@
 import React, { useState, useEffect } from "react";
 import {
-  BrowserRouter as BrowserRouter, 
-  Switch,
+  BrowserRouter,
   Route,
-  Link
 } from "react-router-dom";
+
+import HomePage from './pages/HomePage';
+import GamePage from './pages/GamePage';
+import HostPage from './pages/HostPage';
+import LogoutPage from './pages/LogoutPage';
+
 import './App.css';
 import io from 'socket.io-client';
-import NavBar from "./NavBar";
-import LoginBox from "./LoginBox";
-import Buzzer from "./Buzzer";
-import DTHeader from "./DTHeader";
-import TimeClock from "./TimeClock";
-import ScoreBoard from "./ScoreBoard";
-import {
-  Alert
-} from "reactstrap";
 
 const ENDPOINT="http://localhost:8090";
 
@@ -119,42 +114,35 @@ function App() {
   },[mainSocket, timeRemain, lastBuzz, buzzerDisabled, user]);
 
   // render -------------------------------------------------------
-  let sockErrorComp = null;
-  if (socketError != null) {
-    sockErrorComp = (<Alert color="danger">{socketError}</Alert>);
-  }
-
-  if (user !== null) { 
-    return (
-      <div className="App">
-        <NavBar socket={mainSocket} user={user}/>
-          {sockErrorComp}
-          <DTHeader/>
-          <TimeClock 
-            socket={mainSocket} 
-            user={user} 
-            isRunning={isRunning}
-            timeRemain={timeRemain} 
-            buzzerDisabled={buzzerDisabled}/>
-          <Buzzer 
-            socket={mainSocket} 
-            user={user} 
-            buzzerDisabled={buzzerDisabled}/>
-          <ScoreBoard 
-            socket={mainSocket} 
-            user={user} 
-            scores={scores} 
-            buzzerDisabled={buzzerDisabled}/>
-     </div>
-    );
-  }
 
   return (
-    <div className="App">
-      <NavBar user={user} />
-      {sockErrorComp}
-      <LoginBox socket={mainSocket} user={user}/>
-    </div>
+    <BrowserRouter>
+      <Route exact path="/">
+        <HomePage 
+          user={user}
+          mainSocket={mainSocket}
+          socketError={socketError}
+        />
+      </Route>
+      <Route exact path="/game">
+        <GamePage 
+          user={user}
+          mainSocket={mainSocket}
+          socketError={socketError}
+          timeRemain={timeRemain}
+          isRunning={isRunning}
+          lastBuzz={lastBuzz}
+          buzzerDisabled={buzzerDisabled}
+          scores={scores}
+        />
+      </Route>
+      <Route exact path="/host">
+        <HostPage user/>
+      </Route>
+      <Route exact path="/logout">
+        <LogoutPage user/>
+      </Route>
+    </BrowserRouter>
   );
 }
 

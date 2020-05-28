@@ -5,7 +5,8 @@ import {
   Row,
   Col,
   Card,
-  CardBody
+  CardBody,
+  Button
 } from 'reactstrap';
 
 const ScoreBoard = (props) => {
@@ -21,7 +22,7 @@ const ScoreBoard = (props) => {
       console.log(lineArray.length);
 
       // make sure there's at least four columns at the bottom.
-      if (lineArray.length != 4) { 
+      if (lineArray.length !== 4) { 
         const numToAdd = 3 - (lineArray.length - 1);
         for (let i = 0; i < numToAdd; i++) {
           lineArray.push( [i, { name: '-', score: 0, id: i, fake: true } ] );
@@ -29,16 +30,31 @@ const ScoreBoard = (props) => {
       }
 
       lines = lineArray.map( key => {
+        let playerCard = (
+          <CardBody>
+            <h1>{key[1].name}</h1>
+            <h1>
+              {key[1].score}
+            </h1>
+            <small>{key[0]}</small>
+            <hr/>
+            <Button 
+              key={`${key[0]}-score-minus`} 
+              color="danger" 
+              size="small" 
+              className="float-left">-</Button>
+            <Button 
+              key={`${key[0]}-score-plus`}
+              color="danger" 
+              size="small" 
+              className="float-right">+</Button>
+          </CardBody>
+        );
+    
         return (
           <Col sm="3" key={key}>
             <Card id={key[0]} key={key[0]} body className="text-center h-100">
-              { ! key[1].fake &&  
-                <CardBody>
-                  <h1>{key[1].name}</h1>
-                  <h1>{key[1].score}</h1>
-                  <small>{key[0]}</small> 
-                </CardBody>
-              }
+              { ! key[1].fake && playerCard}
               { key[1].fake &&  
                 <CardBody>
                   <i>waiting for player</i>

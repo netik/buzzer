@@ -5,11 +5,6 @@ import {
   Button
 } from "reactstrap";
 
-const saveUserInfo = (name) => {
-  console.log(`store user ${name}`);
-  sessionStorage.setItem('user', JSON.stringify(name))
-};
-
 const Buzzer = (props) => {
   const [isSending, setIsSending] = useState(false)
 
