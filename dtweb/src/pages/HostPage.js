@@ -115,11 +115,12 @@ const HostPage = (props) => {
     </Row>
     </Container>
     <ScoreBoard 
-    socket={props.mainSocket} 
-    user={props.user} 
-    scores={props.scores} 
-    lastBuzz={props.lastBuzz}
-    buzzerDisabled={props.buzzerDisabled}/>
+      socket={props.mainSocket} 
+      user={props.user} 
+      scores={props.scores} 
+      lastBuzz={props.lastBuzz}
+      host={true}
+      buzzerDisabled={props.buzzerDisabled}/>
 </div>
 )
 }

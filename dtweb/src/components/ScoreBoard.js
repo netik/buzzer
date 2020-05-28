@@ -44,34 +44,46 @@ const ScoreBoard = (props) => {
 
       lines = lineArray.map( key => {
         let style=null;
+        let hostButtons=null;
 
+        // if this card buzzed in, make it blue.
         if (key[0] === props.lastBuzz?.id) {
           console.log('set style');
           style={ "backgroundColor":"blue" }
         }
+
+        // if this is the host page, show the score change buttons
+        if (props.host === true) {
+          hostButtons = (
+            <div>
+              <small>{key[0]}</small>
+              <hr/>
+                <Button 
+                  id={`${key[0]}-score-minus`} 
+                  key={`${key[0]}-score-minus`} 
+                  color="danger" 
+                  size="small"
+                  onClick={handleScoreChange} 
+                  className="float-left">-</Button>
+                <Button 
+                  id={`${key[0]}-score-plus`} 
+                  key={`${key[0]}-score-plus`}
+                  color="danger" 
+                  size="small" 
+                  onClick={handleScoreChange} 
+                  className="float-right">+</Button>
+            </div>
+          );
+        }
         
+        // build the player card
         let playerCard = (
           <CardBody style={style}>
             <h1>{key[1].name}</h1>
             <h1>
               {key[1].score}
             </h1>
-            <small>{key[0]}</small>
-            <hr/>
-            <Button 
-              id={`${key[0]}-score-minus`} 
-              key={`${key[0]}-score-minus`} 
-              color="danger" 
-              size="small"
-              onClick={handleScoreChange} 
-              className="float-left">-</Button>
-            <Button 
-              id={`${key[0]}-score-plus`} 
-              key={`${key[0]}-score-plus`}
-              color="danger" 
-              size="small" 
-              onClick={handleScoreChange} 
-              className="float-right">+</Button>
+            {hostButtons}
           </CardBody>
         );
     
@@ -90,7 +102,7 @@ const ScoreBoard = (props) => {
       });
       setScores(lines);
       }
-  }, [props.scores,props.lastBuzz]);
+  }, [props.scores,props.lastBuzz, props.host]);
 
   return (
     <Container>

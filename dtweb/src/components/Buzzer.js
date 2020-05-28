@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import {
   Row,
   Col,
@@ -6,7 +6,21 @@ import {
 } from "reactstrap";
 
 const Buzzer = (props) => {
-  const [isSending, setIsSending] = useState(false)
+  const [isSending, setIsSending] = useState(false);
+
+  const handleKeyDown = (event) => {
+    if (event.keyCode === 32) {
+      if (! props.buzzerDisabled ) {
+        handleBuzz();
+      }
+    }
+  };
+
+  useEffect(() => {
+    console.log('adding listener');
+
+    document.addEventListener("keydown", handleKeyDown, false);
+  }, []);
 
   const handleBuzz = useCallback(async () => {
       // don't send again while we are sending
