@@ -43,7 +43,7 @@ const NavBar = (props) => {
   return (
     <div>
       <Navbar color="primary" dark expand="md">
-        <NavbarBrand href="#">Dirty Talk Game Show</NavbarBrand>
+        <NavbarBrand href="#">gobuzzyourself - buzzers for everyone</NavbarBrand>
         <NavbarToggler onClick={toggle} />
 
         <Collapse isOpen={isOpen} navbar>

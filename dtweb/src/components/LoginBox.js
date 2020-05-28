@@ -6,7 +6,9 @@ import {
   Input,
   Button,
   Container,
-  Row
+  Row,
+  Col,
+  Card
 } from "reactstrap";
 
 const saveUserInfo = (name) => {
@@ -16,6 +18,7 @@ const saveUserInfo = (name) => {
 
 const LoginBox = (props) => {
   const [username, setUsername] = useState("");
+  const [roomKey, setRoomKey] = useState("");
   const [isSending, setIsSending] = useState(false)
   const [submitEnabled, setSubmitEnabled] = useState(false)
 
@@ -47,26 +50,40 @@ const LoginBox = (props) => {
   return (
   <Container>
     <Row>
-    <Form>
-      <legend>Login</legend>
-      <FormGroup>
-        <Label for="name">Your Name?</Label>
-        <Input placeholder="Name" 
-            value={username}
-            disabled={isSending}
-            onChange={event => {
-              setUsername(event.target.value);
-              if (event.target.value.length >= 3) {
-                setSubmitEnabled(true);
-              } else {
-                setSubmitEnabled(false);
-              }
-            }}/>
-      </FormGroup>
-
-      {submitButton}
-    </Form>
-    </Row>
+      <Col xs={4}>
+      </Col>
+      <Col xs={4}>
+        <Card style={{padding:'20px'}}>
+          <Form>
+            <legend>Login</legend>
+            <FormGroup>
+              <Label for="name">Enter your Name</Label>
+              <Input placeholder="Name" 
+                  value={username}
+                  disabled={isSending}
+                  onChange={event => {
+                    setUsername(event.target.value);
+                    if (event.target.value.length >= 3) {
+                      setSubmitEnabled(true);
+                    } else {
+                      setSubmitEnabled(false);
+                    }
+                  }}/>
+            </FormGroup>
+            <FormGroup>
+              <Label for="name">If you have a room key, enter it below. If not, leave blank.</Label>
+              <Input placeholder="Key" 
+                  value={roomKey}
+                  disabled={isSending}
+                  onChange={event => {
+                    setRoomKey(event.target.value);
+                  }}/>
+            </FormGroup>
+           {submitButton}
+          </Form>
+        </Card>
+      </Col>
+      </Row>
   </Container>
   );
 }

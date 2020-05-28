@@ -4,6 +4,7 @@ import {
   Route,
 } from "react-router-dom";
 
+import Sound from 'react-sound';
 import HomePage from './pages/HomePage';
 import GamePage from './pages/GamePage';
 import ScorePage from './pages/ScorePage';
@@ -23,12 +24,16 @@ import {
   faPlay,
   faTrash,
   faHistory,
+  faPlusSquare,
+  faMinusSquare,
   faCircle
 } from '@fortawesome/free-solid-svg-icons'
 
 library.add(
   faPlusCircle, 
   faMinusCircle,
+  faPlusSquare,
+  faMinusSquare,
   faPause,
   faPlay,
   faTrash,
@@ -49,6 +54,8 @@ function App() {
   const [user, setUser] = useState(null);
   const [scores, setScores] = useState(null);
   const [socketWatchdog, setSocketWatchdog] = useState(0);
+  const [isBuzzing, setIsBuzzing] = useState(false);
+  const [isTimeout, setIsTimeout] = useState(false);
 
   // in this simple app the top-level App class will manage state and 
   // pass the socket down to children for communications with the server
@@ -56,13 +63,22 @@ function App() {
   useInterval(() =>{
     setSocketWatchdog(socketWatchdog + 1);
 
-    if (socketWatchdog > 2) {
+    if (socketWatchdog > 3) {
       console.log('no heartbeat!!')
       setSocketError('No heartbeat from server. Please wait a bit and try again, or reload the page.');
     }
   },1000);
 
+  // These functions stop our sounds
+  const handleBuzzDone =  () => {
+    setIsBuzzing(false);
+  };
+  const handleTimeoutDone = () => {
+    setIsTimeout(false);
+  };
+
   useEffect(function setupSocket() { 
+
     if (! mainSocket) {
       console.log('socketsetup');
 
@@ -80,6 +96,11 @@ function App() {
         setTimeRemain(data.timeRemain);
         setIsRunning(data.clockRunning);
         setSocketWatchdog(0); // all good, we're hearing heartbeats.
+      });
+
+      s.on('timesup', (data) => {
+        console.log('timesup');
+        setIsTimeout(true);
       });
 
       s.on('joined', (data) => {
@@ -107,8 +128,10 @@ function App() {
       s.on('lastbuzz', (data) => {
         console.log(data);
         if (data !== null) {
+          setIsBuzzing(true);
           setLastBuzz(data);
         } else {
+          setIsBuzzing(false);
           setLastBuzz(null);
         }
       });
@@ -134,8 +157,32 @@ function App() {
 
   // render -------------------------------------------------------
 
+  // handle sounds
+  let buzzSound = null;
+  if (isBuzzing) {
+    buzzSound = (<Sound
+     url="sounds/buzz.mp3"
+     playStatus={Sound.status.PLAYING}
+     onFinishedPlaying={handleBuzzDone}
+     autoLoad={true}
+     ignoreMobileRestrictions={true}
+    />);
+  }
+
+  let timeoutSound = null;
+  if (isTimeout) {
+    buzzSound = (<Sound
+     url="sounds/timeup.mp3"
+     playStatus={Sound.status.PLAYING}
+     onFinishedPlaying={handleTimeoutDone}
+     autoLoad={true}
+     ignoreMobileRestrictions={true}
+    />);
+  }
+
   return (
     <BrowserRouter>
+      {buzzSound}{timeoutSound}
       <Route exact path="/">
         <HomePage 
           user={user}
