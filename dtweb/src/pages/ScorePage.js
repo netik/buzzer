@@ -30,7 +30,8 @@ const ScorePage = (props) => {
     <ScoreBoard 
       socket={props.mainSocket} 
       user={props.user} 
-      scores={props.scores} 
+      scores={props.scores}
+      lastBuzz={props.lastBuzz}
       buzzerDisabled={props.buzzerDisabled}/>
 </div>
 )

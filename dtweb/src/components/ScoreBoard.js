@@ -30,8 +30,15 @@ const ScoreBoard = (props) => {
       }
 
       lines = lineArray.map( key => {
+        let style=null;
+
+        if (key[0] === props.lastBuzz?.id) {
+          console.log('set style');
+          style={ "backgroundColor":"blue" }
+        }
+        
         let playerCard = (
-          <CardBody>
+          <CardBody style={style}>
             <h1>{key[1].name}</h1>
             <h1>
               {key[1].score}
@@ -66,7 +73,7 @@ const ScoreBoard = (props) => {
       });
       setScores(lines);
       }
-  }, [props.scores]);
+  }, [props.scores,props.lastBuzz]);
 
   return (
     <Container>

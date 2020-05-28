@@ -42,6 +42,7 @@ const GamePage = (props) => {
         buzzerDisabled={props.buzzerDisabled}/>
       <ScoreBoard 
         socket={props.mainSocket} 
+        lastBuzz={props.lastBuzz}
         user={props.user} 
         scores={props.scores} 
         buzzerDisabled={props.buzzerDisabled}/>

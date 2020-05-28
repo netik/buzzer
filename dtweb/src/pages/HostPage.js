@@ -118,6 +118,7 @@ const HostPage = (props) => {
     socket={props.mainSocket} 
     user={props.user} 
     scores={props.scores} 
+    lastBuzz={props.lastBuzz}
     buzzerDisabled={props.buzzerDisabled}/>
 </div>
 )

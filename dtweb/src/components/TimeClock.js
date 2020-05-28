@@ -20,7 +20,6 @@ const TimeClock = (props) => {
   
   useEffect(() => {
     if (props.lastBuzz) {
-      console.log(props.lastBuzz);
       setStatusMessage(`${props.lastBuzz.name} buzzed in!`);
       return;
     }
