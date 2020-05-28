@@ -12,6 +12,29 @@ import LogoutPage from './pages/LogoutPage';
 import './App.css';
 import io from 'socket.io-client';
 
+// Font not-so-awesome library bs
+import { library } from '@fortawesome/fontawesome-svg-core'
+import { 
+  faPlusCircle, 
+  faMinusCircle,
+  faPause,
+  faPlay,
+  faTrash,
+  faHistory,
+  faCircle
+} from '@fortawesome/free-solid-svg-icons'
+
+library.add(
+  faPlusCircle, 
+  faMinusCircle,
+  faPause,
+  faPlay,
+  faTrash,
+  faHistory,
+  faCircle
+);
+
+// API server
 const ENDPOINT="http://localhost:8090";
 
 // set up our heartbeat
@@ -137,7 +160,15 @@ function App() {
         />
       </Route>
       <Route exact path="/host">
-        <HostPage user/>
+        <HostPage  
+          user={user}
+          mainSocket={mainSocket}
+          socketError={socketError}
+          timeRemain={timeRemain}
+          isRunning={isRunning}
+          lastBuzz={lastBuzz}
+          buzzerDisabled={buzzerDisabled}
+          scores={scores}/>
       </Route>
       <Route exact path="/logout">
         <LogoutPage user/>
