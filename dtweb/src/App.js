@@ -6,6 +6,7 @@ import {
 
 import HomePage from './pages/HomePage';
 import GamePage from './pages/GamePage';
+import ScorePage from './pages/ScorePage';
 import HostPage from './pages/HostPage';
 import LogoutPage from './pages/LogoutPage';
 
@@ -161,6 +162,17 @@ function App() {
       </Route>
       <Route exact path="/host">
         <HostPage  
+          user={user}
+          mainSocket={mainSocket}
+          socketError={socketError}
+          timeRemain={timeRemain}
+          isRunning={isRunning}
+          lastBuzz={lastBuzz}
+          buzzerDisabled={buzzerDisabled}
+          scores={scores}/>
+      </Route>
+      <Route exact path="/scores">
+        <ScorePage  
           user={user}
           mainSocket={mainSocket}
           socketError={socketError}
