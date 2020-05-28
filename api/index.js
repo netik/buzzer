@@ -102,6 +102,20 @@ io.on('connection', (socket) => {
   socket.on('buzz', (user) => {
     statObj.msg_buzz++;
     
+    // there is a potential race condition here where someone buzzes in 
+    // and we don't have data for them, like after a restart.
+    const theUser = data.users.get(socket.id);
+    if (!theUser) {
+      log.error(`invalid socket id on buzz ${socket.id}`);
+      return;
+    }
+
+    // debounce
+    if (data.lastbuzz == socket.id) {
+      log.info(`${socket.id}: drop duplicate buzz`);
+      return;
+    }
+
     // lock everyone out and stop the clock
     data.lockout = true;
     data.clockRunning = false;
@@ -214,7 +228,7 @@ io.on('connection', (socket) => {
     let scoreTransit = JSON.stringify(Array.from(data.scores));
     io.emit('scoreupdate', scoreTransit);
 
-    log.info(`${socket.request.connection.remoteAddress} - (socket ${socket.id}) connected`);
+    log.info(`${socket.request.connection.remoteAddress} - (socket ${socket.id}) disconnected`);
   });
 
 

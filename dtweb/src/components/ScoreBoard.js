@@ -13,27 +13,23 @@ const ScoreBoard = (props) => {
 
   const [scores, setScores] = useState(null);
 
-  const handleScoreChange = (e) => {
-    let id = e.target.id;
-    let parts = id.split('-score-');
-    console.log(e.target);
-    console.log(parts);
-
-    if (parts[1] === "minus") {
-      props.socket.emit('scoredown',parts[0]);
-    } else {
-      props.socket.emit('scoreup',parts[0]);
-    }
-  };
-
   useEffect(() => {
-     console.log('scorerender');
+    const handleScoreChange = (e) => {
+      let id = e.target.id;
+      let parts = id.split('-score-');
+  
+      if (parts[1] === "minus") {
+        props.socket.emit('scoredown',parts[0]);
+      } else {
+        props.socket.emit('scoreup',parts[0]);
+      }
+    };  
+
+    console.log('scorerender');
      let lines = null;
 
      if (props.scores) {
       let lineArray = Array.from(props.scores.entries());
-      console.log(lineArray.length);
-
       // make sure there's at least four columns at the bottom.
       if (lineArray.length !== 4) { 
         const numToAdd = 3 - (lineArray.length - 1);
@@ -102,7 +98,7 @@ const ScoreBoard = (props) => {
       });
       setScores(lines);
       }
-  }, [props.scores,props.lastBuzz, props.host]);
+  }, [props.socket, props.scores,props.lastBuzz, props.host]);
 
   return (
     <Container>

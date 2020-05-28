@@ -52,7 +52,7 @@ const NavBar = (props) => {
               <NavLink href="https://github.com/netik/buzzer">Source</NavLink>
             </NavItem>
           </Nav>
-          <NavbarText>
+          <NavbarText style={{padding:0}}>
           {loggedInMenu}
           </NavbarText>
         </Collapse>

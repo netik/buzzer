@@ -5,27 +5,37 @@ import {
   Button
 } from "reactstrap";
 
-const Buzzer = (props) => {
-  const [isSending, setIsSending] = useState(false);
-
-  const handleKeyDown = (event) => {
-    if (event.keyCode === 32) {
-      if (! props.buzzerDisabled ) {
-        handleBuzz();
-      }
-    }
-  };
+function useKeyCode(keyCode, preventDefault) {
+  const [isKeyPressed, setKeyPressed] = useState();
+  // Only allow fetching each keypress event once to prevent infinite loops
+  if (isKeyPressed) {
+    setKeyPressed(false);
+  }
 
   useEffect(() => {
-    console.log('adding listener');
+    function downHandler(event) {
+      if (event.keyCode === keyCode) {
+        setKeyPressed(true);
+        if (preventDefault) {
+          event.preventDefault();
+        }
+      }
+    }
+    window.addEventListener('keydown', downHandler);
+    return () => window.removeEventListener('keydown', downHandler);
+  }, [keyCode, preventDefault]);
 
-    document.addEventListener("keydown", handleKeyDown, false);
-  }, []);
+  return isKeyPressed;
+}
 
-  const handleBuzz = useCallback(async () => {
+const Buzzer = (props) => {
+  const [isSending, setIsSending] = useState(false);
+  const spacePress = useKeyCode(32, true);
+
+  const handleBuzz = async () => {
       // don't send again while we are sending
       if (isSending) return;
-
+      console.log('handlebuzz');
       // update state
       setIsSending(true);
 
@@ -33,7 +43,9 @@ const Buzzer = (props) => {
       await props.socket.emit('buzz', { user: props.user });
       // once the request is sent, update state again
       setIsSending(false);
-  }, [isSending, props.user, props.socket]) // update the callback if the state changes
+  }; // update the callback if the state changes
+
+  if (spacePress) { handleBuzz() }
 
   return (
     <Row>
@@ -43,7 +55,7 @@ const Buzzer = (props) => {
       disabled={props.buzzerDisabled}
       onClick={handleBuzz}>Buzz</Button>
       {! props.buzzerDisabled &&  
-        <p class="text-muted">
+        <p className="text-muted">
          Hit the <i>Spacebar</i> or click Buzz to Buzz in now!
         </p>
       } 
