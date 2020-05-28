@@ -13,10 +13,23 @@ const ScoreBoard = (props) => {
 
   const [scores, setScores] = useState(null);
 
+  const handleScoreChange = (e) => {
+    let id = e.target.id;
+    let parts = id.split('-score-');
+    console.log(e.target);
+    console.log(parts);
+
+    if (parts[1] === "minus") {
+      props.socket.emit('scoredown',parts[0]);
+    } else {
+      props.socket.emit('scoreup',parts[0]);
+    }
+  };
+
   useEffect(() => {
      console.log('scorerender');
      let lines = null;
-          
+
      if (props.scores) {
       let lineArray = Array.from(props.scores.entries());
       console.log(lineArray.length);
@@ -46,14 +59,18 @@ const ScoreBoard = (props) => {
             <small>{key[0]}</small>
             <hr/>
             <Button 
+              id={`${key[0]}-score-minus`} 
               key={`${key[0]}-score-minus`} 
               color="danger" 
-              size="small" 
+              size="small"
+              onClick={handleScoreChange} 
               className="float-left">-</Button>
             <Button 
+              id={`${key[0]}-score-plus`} 
               key={`${key[0]}-score-plus`}
               color="danger" 
               size="small" 
+              onClick={handleScoreChange} 
               className="float-right">+</Button>
           </CardBody>
         );

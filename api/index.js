@@ -180,6 +180,30 @@ io.on('connection', (socket) => {
     log.info(`Pause clock with ${data.timeRemain}`);
   })
 
+  socket.on('scoreup', (id) => {
+    let oldobj = data.scores.get(id);
+
+    data.scores.set(id, { 
+      name: oldobj.name,
+      score: oldobj.score + 1 
+    });
+
+    let scoreTransit = JSON.stringify(Array.from(data.scores));
+    io.emit('scoreupdate', scoreTransit);
+  });
+  
+  socket.on('scoredown', (id) => {
+    let oldobj = data.scores.get(id);
+
+    data.scores.set(id, { 
+      name: oldobj.name,
+      score: oldobj.score - 1 
+    });
+    
+    let scoreTransit = JSON.stringify(Array.from(data.scores));
+    io.emit('scoreupdate', scoreTransit);
+  });
+  
   socket.on('disconnect', function () {
     // user disconnected, remove them from our state
     statObj.connected--;
