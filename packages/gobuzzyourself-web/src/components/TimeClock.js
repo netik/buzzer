@@ -35,9 +35,11 @@ const TimeClock = (props) => {
     <Row>
       <Col className="text-center" sm="12">
        <div className="txt-jumbo">
-         <FontAwesomeIcon icon={ 
-           props.isRunning === true ? "play" : "pause"
-         }/>&nbsp;{formatTime(props.timeRemain)}
+         <FontAwesomeIcon
+           icon={props.isRunning === true ? "play" : "square"}
+           style={props.isRunning === true ? {color:'#006600'} : {color:'#aa0000'}}
+         />&nbsp;{formatTime(props.timeRemain)}
+         
        </div>
        <h2 className="status-message">{statusMessage}</h2>
       </Col>

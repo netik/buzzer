@@ -26,7 +26,9 @@ import {
   faHistory,
   faPlusSquare,
   faMinusSquare,
-  faCircle
+  faCircle,
+  faSquare,
+  faStop
 } from '@fortawesome/free-solid-svg-icons'
 
 library.add(
@@ -38,7 +40,9 @@ library.add(
   faPlay,
   faTrash,
   faHistory,
-  faCircle
+  faCircle,
+  faSquare,
+  faStop
 );
 // API server
 const ENDPOINT=process.env.REACT_APP_API_HOST ? process.env.REACT_APP_API_HOST : "http://localhost:8090";
