@@ -41,7 +41,7 @@ library.add(
   faCircle
 );
 // API server
-const ENDPOINT="http://localhost:8090";
+const ENDPOINT=process.env.API_HOST ? process.env.API_HOST : "http://localhost:8090";
 
 // set up our heartbeat
 function App() {
