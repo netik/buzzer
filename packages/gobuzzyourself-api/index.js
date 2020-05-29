@@ -229,7 +229,10 @@ io.on('connection', (socket) => {
 
   socket.on('scoreup', (id) => {
     let oldobj = data.scores.get(id);
-
+    if (!oldobj) { 
+      console.log(`scoreup: can't find ${id}`);
+      return 
+    }
     data.scores.set(id, { 
       name: oldobj.name,
       score: oldobj.score + 1 
@@ -241,6 +244,10 @@ io.on('connection', (socket) => {
   
   socket.on('scoredown', (id) => {
     let oldobj = data.scores.get(id);
+    if (!oldobj) { 
+      console.log(`scoredown: can't find ${id}`);
+      return 
+    }
 
     data.scores.set(id, { 
       name: oldobj.name,
