@@ -16,14 +16,11 @@ const ScoreBoard = (props) => {
   const [scores, setScores] = useState(null);
 
   useEffect(() => {
-    const handleScoreChange = (e) => {
-      let id = e.target.id;
-      let parts = id.split('-score-');
-  
-      if (parts[1] === "minus") {
-        props.socket.emit('scoredown',parts[0]);
+    const handleScoreChange = (id, direction, e) => {
+      if (direction === "down") {
+        props.socket.emit('scoredown', id);
       } else {
-        props.socket.emit('scoreup',parts[0]);
+        props.socket.emit('scoreup', id);
       }
     };  
 
@@ -61,14 +58,14 @@ const ScoreBoard = (props) => {
                   key={`${key[0]}-score-minus`} 
                   color="danger" 
                   size="small"
-                  onClick={handleScoreChange} 
+                  onClick={(e) => handleScoreChange(key[0], 'down', e)} 
                   className="float-left"><FontAwesomeIcon icon="minus-square" size="2x"/></Button>
                 <Button 
                   id={`${key[0]}-score-plus`} 
                   key={`${key[0]}-score-plus`}
                   color="danger" 
                   size="small" 
-                  onClick={handleScoreChange} 
+                  onClick={(e) => handleScoreChange(key[0], 'up', e)} 
                   className="float-right"><FontAwesomeIcon icon="plus-square" size="2x"/></Button>
             </div>
           );
