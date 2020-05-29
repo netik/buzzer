@@ -78,7 +78,7 @@ app.set('view engine', 'pug')
 if (process.env.NODE_ENV === 'production') { 
     app.get('/', (req, res) => res.redirect(301, 'https://gobuzzyourself-web.herokuapp.com/'));
 } else {
-    app.get('/', (req, res) => res.render('index', { title }))
+    app.get('/', (req, res) => res.send('Please use an API client to talk to this server.'));
 }
 
 //app.get('/host', (req, res) => res.render('host', Object.assign({ title }, getData())));
