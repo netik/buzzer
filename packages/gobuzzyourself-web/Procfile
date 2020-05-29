@@ -1,2 +1,2 @@
-web: yarn workspace gobuzzyousrelf-web start
+web: yarn workspace gobuzzyourself-web start
 
