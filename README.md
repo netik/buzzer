@@ -1,4 +1,11 @@
 gobuzzyourself
+A buzzer system to play games in the current pandemic.
+J. Adams
+5/29/2020
+------------------------------------------------------------------
+
+This thing started as a buzzer system for the "Dirty Talk Game Show"
+and expanded into a bit of a project.`
 
 This application is setup for a multi-procfile deploy on heroku.
 
