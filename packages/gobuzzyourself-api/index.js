@@ -176,6 +176,16 @@ io.on('connection', (socket) => {
     log.info(`Reset Clock`)
   });
 
+  socket.on('resetscores', () => {
+    for (let elem of data.scores.entries()) {
+      elem[1].score = 0;
+      data.scores.set(elem[0], elem[1]);
+    }
+
+    let scoreTransit = JSON.stringify(Array.from(data.scores));
+    io.emit('scoreupdate', scoreTransit);
+  });
+
   socket.on('startclock', () => {
     statObj.msg_startclock++;
 
