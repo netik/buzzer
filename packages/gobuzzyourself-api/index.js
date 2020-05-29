@@ -61,11 +61,18 @@ const getData = () => ({
 app.use(express.static('public'))
 app.set('view engine', 'pug')
 
-app.get('/', (req, res) => res.render('index', { title }))
-app.get('/host', (req, res) => res.render('host', Object.assign({ title }, getData())))
+if (process.env.NODE_ENV === 'production') { 
+    app.get('/', (req, res) => res.redirect(301, 'https://gobuzzyourself.herokuapp.com/');
+} else {
+    app.get('/', (req, res) => res.render('index', { title }))
+}
+
+//app.get('/host', (req, res) => res.render('host', Object.assign({ title }, getData())));
+
 app.get('/healthcheck', function(req, res){
   res.send('OK');
 });
+
 app.get('/status', function(req, res){
   res.setHeader("Content-Type", "application/json");
   res.send(JSON.stringify(statObj) + "\n");
