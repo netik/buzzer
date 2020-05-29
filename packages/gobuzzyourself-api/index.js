@@ -270,5 +270,7 @@ function fireTick() {
 
 // set up our clock routine, which will run forever.
 const timer = setInterval(fireTick, 1000);
+const port = process.env.PORT ? process.env.PORT : 8090;
 
-server.listen(8090, () => log.info('Listening on 8090'))
+server.listen(port, () => log.info(`Listening on TCP port ${port}`))
+
