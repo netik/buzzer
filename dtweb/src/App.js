@@ -62,7 +62,7 @@ function App() {
   // our entire API is over socket.io, we have nothing more.
   useInterval(() =>{
     setSocketWatchdog(socketWatchdog + 1);
-
+    
     if (socketWatchdog > 3) {
       console.log('no heartbeat!!')
       setSocketError('No heartbeat from server. Please wait a bit and try again, or reload the page.');
@@ -92,10 +92,15 @@ function App() {
         setSocketError(null);
       });
 
+      s.on('ping', (echo) => {
+        s.emit('pong', echo);
+      });
+
       s.on('tick', (data) => {
         setTimeRemain(data.timeRemain);
         setIsRunning(data.clockRunning);
         setSocketWatchdog(0); // all good, we're hearing heartbeats.
+        setSocketError(null);
       });
 
       s.on('timesup', (data) => {

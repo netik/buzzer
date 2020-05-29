@@ -7,7 +7,7 @@ const server = http.Server(app);
 const io = socketio(server);
 const log = require('npmlog-ts')
 
-const title = 'Dirty Talk Game Show'
+const title = 'gobuzzyourself'
 const timeStep = 5;
 
 // module configuration
