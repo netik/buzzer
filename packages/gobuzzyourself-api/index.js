@@ -26,6 +26,7 @@ var statObj = { 'connections' : 0,
 		'msg_disconnect' : 0,
     'msg_chat' : 0,
     'msg_getscores' : 0,
+    'msg_resetscores' : 0,
 		'noauth' : 0,
 		'uptime' : 0,
 		'valid_hash' : 0 };
@@ -177,6 +178,8 @@ io.on('connection', (socket) => {
   });
 
   socket.on('resetscores', () => {
+    statObj.msg_resetscores++;
+
     for (let elem of data.scores.entries()) {
       elem[1].score = 0;
       data.scores.set(elem[0], elem[1]);
