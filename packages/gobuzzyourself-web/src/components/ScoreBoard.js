@@ -9,6 +9,8 @@ import {
   Button
 } from 'reactstrap';
 
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+
 const ScoreBoard = (props) => {
 
   const [scores, setScores] = useState(null);
@@ -60,14 +62,14 @@ const ScoreBoard = (props) => {
                   color="danger" 
                   size="small"
                   onClick={handleScoreChange} 
-                  className="float-left">-</Button>
+                  className="float-left"><FontAwesomeIcon icon="minus-square" size="2x"/></Button>
                 <Button 
                   id={`${key[0]}-score-plus`} 
                   key={`${key[0]}-score-plus`}
                   color="danger" 
                   size="small" 
                   onClick={handleScoreChange} 
-                  className="float-right">+</Button>
+                  className="float-right"><FontAwesomeIcon icon="plus-square" size="2x"/></Button>
             </div>
           );
         }
