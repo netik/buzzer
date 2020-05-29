@@ -1,0 +1,178 @@
+
+/* 
+ * dirty talk colors
+ *
+ * f22e3e red (shades b3222e 73161e ff3042 d92938)
+ * f2dff1 lavender/white
+ * 5503a6 purple
+ * c79bf2 light purple
+ * 0d0d0d black
+ *
+ * complementary
+ *
+ * a64214 burnt orange
+ * 0ca696 cyan
+ */
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  height: 100%;
+}
+
+body {
+  padding: 0;
+  margin: 0;
+  font-family: "Poppins", -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif,
+    "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", sans-serif;
+  /* background: linear-gradient(-45deg, #a6f4e5 0%, #23e6bf 47%); */
+  /* background-color: rgb(44, 75, 255); */
+  background-color: #0d0d0d;
+  color: #f2dff1;
+  text-align: center;
+}
+
+body,
+input,
+button {
+  font-size: 1em;
+}
+
+p {
+  margin: 2em 0;
+}
+
+ol {
+  text-align: left;
+}
+
+li {
+  margin: 0.5em 0;
+}
+
+.hidden {
+  display: none;
+}
+
+header {
+  background-color: #0d0d0d;
+}
+
+.main-image {
+  width:100%;
+}
+
+.logo {
+  width: 100%;
+  max-width: 310px;
+  max-height: 120px;
+  padding: 1em 0;
+}
+
+.header-image {
+  max-width: 100px;
+}
+
+.container {
+  width: 100%;
+  max-width: 400px;
+  padding: 1em;
+  margin: 0 auto;
+}
+.view button:last-child {
+  margin-bottom: 0;
+}
+
+.buzzer-mode {
+  background-color: rgb(16, 21, 78);
+  color: rgb(243, 175, 185);
+}
+
+input[type="text"],
+input[type="number"],
+button {
+  display: block;
+  padding: 0.8em 1.4em;
+  margin: 1em 0;
+  width: 100%;
+  border-radius: 5px;
+  font-family: "Roboto", -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif,
+    "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", sans-serif;
+  font-weight: 500;
+}
+
+input[type="text"],
+input[type="number"] {
+  border: 1px solid #B8B8B8;
+}
+
+input[type="text"]:focus,
+input[type="number"]:focus,
+input[type="text"]:active,
+input[type="number"]:active {
+  border-color: #2c4bff;
+  box-shadow: 0 0 0 3px #ABB7FF;
+  outline: none;
+}
+
+button {
+  padding: 1.4em 1.4em;
+  font-size: 1.2em;
+  background-color: #73161e;
+  color: #fff;
+  cursor: pointer;
+  border: 0;
+}
+
+button:hover {
+  background-color: #B3222E;
+}
+
+button:active {
+  box-shadow: rgb(171, 183, 255) 0px 0px 0px 3px;
+  outline: 0px;
+  transform: translateY(  1px);
+}
+
+button:focus {
+  box-shadow: 0 0 0 3px #ABB7FF;
+}
+
+.main-image {
+  width: 90%;
+}
+
+.smallbutton {
+  height: 20px;
+}
+
+.buzzer {
+  height: 5em;
+  font-size: 2em;
+  background-color: #f22e3e;
+  color: rgb(255, 249, 249);
+}
+.buzzer:focus {
+  box-shadow: 0 0 0 3px #ABB7FF;
+}
+.buzzer:hover,
+.buzzer:active {
+  background-color: #ff0026;
+}
+
+.buzzer:disabled,
+button[disabled]{
+  border: 1px solid #999999;
+  background-color: #444;
+  color: #666666;
+}
+.secondary {
+  background-color: #5503A6;
+  color: #ccc;
+}
+
+.secondary:hover {
+  background-color: #7C05F2;
+}
