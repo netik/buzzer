@@ -1,2 +1,2 @@
-web: yarn workspace gobuzzyourself-web start
+web: yarn workspace gobuzzyourself-web staticserver
 
