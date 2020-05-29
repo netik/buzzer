@@ -17,7 +17,8 @@ fi
   if [ "$BUILD_ENV" = "web-client" ]; then
     yarn workspace gobuzzyourself-web build
   elif [ "$BUILD_ENV" = "api" ]; then
-    yarn workspace gobuzzyourself-api build
+    echo "$0: api deploy - nothing to do (this is fine.)"
+    exit 0
   else
     echo "Error: no build config for BUILD_ENV value '$BUILD_ENV'"
     exit 1
