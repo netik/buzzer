@@ -58,11 +58,23 @@ const getData = () => ({
   lastbuzz: data.lastbuzz
 })
 
+// set up cors
+app.use(function(req, res, next) {
+  // wide open for now
+  if (process.env.NODE_ENV === 'production') {
+    res.header("Access-Control-Allow-Origin", "gobuzzyourself-web.herokuapp.com");
+  } else {
+    res.header("Access-Control-Allow-Origin", "*");
+  }
+  res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
+  next();
+});
+
 app.use(express.static('public'))
 app.set('view engine', 'pug')
 
 if (process.env.NODE_ENV === 'production') { 
-    app.get('/', (req, res) => res.redirect(301, 'https://gobuzzyourself.herokuapp.com/');
+    app.get('/', (req, res) => res.redirect(301, 'https://gobuzzyourself-web.herokuapp.com/');
 } else {
     app.get('/', (req, res) => res.render('index', { title }))
 }
