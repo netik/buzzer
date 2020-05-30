@@ -1,6 +1,6 @@
 .btn-jumbo {
   padding: 10px 20px;
-  margin: 30px;
+  margin: 20px;
   font-size: 40px;
   border-radius: 10px;
   width: 50%;
@@ -16,9 +16,6 @@
 
 .status-message {
   font-size: 25px;
+  margin: 4px;
   color: rgb(250, 38, 172);
-}
-
-.headerLogo {
-  width: 200px;
 }

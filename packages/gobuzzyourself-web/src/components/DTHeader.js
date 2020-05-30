@@ -10,22 +10,29 @@ import Logo from "../images/dirtytalk-fs-trans.png";
 const DTHeader = (props) => {
   return (
     <Container>
-      <Row>
-        &nbsp;
-      </Row>
-      <Row className="d-flex align-items-center">
-        <Col className="d-flex justify-content-start" key="1">
-          <img src={Logo} className="headerLogo" alt="Logo" />
+      <Row className="align-items-center">
+        <Col md={2} key="1" className="d-none d-lg-block">
+          <img src={Logo} 
+                className="headerLogo"
+                key="3" 
+                alt="Logo"
+                width="180"
+                height="120"/>
         </Col>
-        <Col className="d-flex justify-content-center" key="2">
-          <span className="d-flex justify-content-center align-items-center text-center">
+        <Col md={8} key="2">
+          <span className="align-items-center text-center">
             <h2>
               The Dirty Talk Game Show
             </h2>
           </span>
         </Col>
-        <Col className="d-flex justify-content-end">
-          <img src={Logo} className="headerLogo" key="3" alt="Logo"/>
+        <Col md={2} className="d-none d-lg-block">
+          <img src={Logo} 
+            className="headerLogo"
+            key="3" 
+            alt="Logo"
+            width="180"
+            height="120"/>
         </Col>
       </Row>
     </Container>

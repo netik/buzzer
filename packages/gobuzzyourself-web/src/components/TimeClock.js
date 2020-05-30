@@ -6,7 +6,7 @@ import {
 } from 'reactstrap';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 
-const waitForHost = 'STOPPED - WAITING FOR HOST';
+const waitForHost = 'WAITING FOR HOST';
 
 const TimeClock = (props) => {
   const formatTime = (t) => {
