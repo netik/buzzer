@@ -12,13 +12,33 @@ const expressWinston = require('express-winston');
 const serviceLogger = require('./util/service_logger');
 const logger = serviceLogger.logger('api');
 
+const Redis = require('redis');
+const RedisStore = require('connect-redis')(session);
+
+// Redis Client instance for sessions ----------------------
+let redisClient = Redis.createClient({
+  host: 'localhost',
+  port: 6379
+});
+
 global.logger = logger;
+
+// set up the logger
+app.use(
+  expressWinston.logger({
+    winstonInstance: logger
+  })
+);
 
 const sessionConfig = {
   name: 'buzzid',
   secret: process.env.SESSION_SECRET ? process.env.SESSION_SECRET : 'secret',
   resave: false,
   saveUninitialized: true,
+  store: new RedisStore({
+    client: redisClient,
+    ttl: 5*24*60*60 // should always match the cookie maxAge (in seconds)
+  }),
   cookie: {
     httpOnly: true,
     path: '/',
@@ -28,9 +48,8 @@ const sessionConfig = {
 };
 
 // setup sessions
-const sessionHandler = session(sessionConfig);
-const sharedSession = require("express-socket.io-session");
- 
+const sessionMiddleware = session(sessionConfig);
+
 // setup 
 const title = 'gobuzzyourself'
 
@@ -40,16 +59,6 @@ const timeStep = 5;
 
 // module configuration 
 app.disable('x-powered-by');
-
-// set up the logger
-app.use(
-  expressWinston.logger({
-    winstonInstance: global.logger
-  })
-);
-
-// Use express-session middleware for express
-app.use(sessionHandler);
 
 // zero out stats
 var statObj = { 'connections' : 0,
@@ -96,6 +105,17 @@ const getData = () => ({
   lastbuzz: data.lastbuzz
 })
 
+// setup sessions
+
+// Use express-session middleware for express
+app.use(sessionMiddleware);
+
+io.use((socket, next) => {
+  console.log("firing!");
+  console.log(socket.request.headers);
+  sessionMiddleware(socket.request, {}, next);
+});
+
 // set up cors
 app.use(function(req, res, next) {
   // wide open for now
@@ -133,17 +153,18 @@ app.get('/status', function(req, res){
   res.send(JSON.stringify(statObj) + "\n");
 });
 
-// Use shared session middleware for socket.io
-// setting autoSave:true
-io.use(sharedSession(sessionHandler, {
-  autoSave: true
-})); 
-
 io.on('connection', (socket) => {
   var clientIP = socket.request.connection.remoteAddress;
-  log.info(`${clientIP} - (socket ${socket.id} / session ${socket.handshake.session.id}) connected`);
+  log.info(`${clientIP} - (socket ${socket.id} / session ${socket.request.session.id}) connected`);
   log.info(JSON.stringify(socket.handshake.session));
   
+  // update a counter for a test.
+  const session = socket.request.session;
+  if (! session.connections) { session.connections = 0; }
+  session.connections++;
+  session.save();
+  console.log(session.connections);
+
   statObj.connections++;
   statObj.connected++;
 
@@ -316,7 +337,7 @@ io.on('connection', (socket) => {
     let scoreTransit = JSON.stringify(Array.from(data.scores));
     io.emit('scoreupdate', scoreTransit);
 
-    log.info(`${socket.request.connection.remoteAddress} - (socket ${socket.id} / session ${socket.handshake.session.id}) disconnected`);
+    log.info(`${socket.request.connection.remoteAddress} - (socket ${socket.id} / session ${socket.request.session.id}) disconnected`);
   });
 
 
