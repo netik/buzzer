@@ -47,6 +47,18 @@ library.add(
 // API server
 const ENDPOINT=process.env.REACT_APP_API_HOST ? process.env.REACT_APP_API_HOST : "http://localhost:8090";
 
+var nothing = new Audio('/sounds/silence.mp3');
+
+let audioLocked;
+// if we can't play silence we have to disable audio.
+window.onload = () => {
+  nothing.play().then(() => {
+    console.log('Audio started unlocked!');
+  }).catch((e) => {
+    alert('Audio started locked' + e)
+  });
+};
+
 // set up our heartbeat
 function App() {
   const [mainSocket, setMainSocket] = useState(null);

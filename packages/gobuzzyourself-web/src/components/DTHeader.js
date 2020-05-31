@@ -6,7 +6,6 @@ import {
 } from "reactstrap";
 
 import Logo from "../images/dirtytalk-fs-trans.png";
-
 const DTHeader = (props) => {
   return (
     <Container>

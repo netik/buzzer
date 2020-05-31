@@ -1,29 +1,56 @@
 const http = require('http')
 const express = require('express')
 const socketio = require('socket.io')
+const session = require('express-session');
 
 const app = express();
 const server = http.Server(app);
 const io = socketio(server);
 const log = require('npmlog-ts')
 
-const session = require("express-session")({
-  secret: process.env.SECRET ? process.env.SECRET : "secretsecret",
-  resave: true,
-  saveUninitialized: true
-});
+const expressWinston = require('express-winston');
+const serviceLogger = require('./util/service_logger');
+const logger = serviceLogger.logger('api');
 
-const sharedsession = require("express-socket.io-session");
+global.logger = logger;
+
+const sessionConfig = {
+  name: 'buzzid',
+  secret: process.env.SESSION_SECRET ? process.env.SESSION_SECRET : 'secret',
+  resave: false,
+  saveUninitialized: true,
+  cookie: {
+    httpOnly: true,
+    path: '/',
+    secure: (process.env.NODE_ENV === 'production' || process.env.NODE_ENV === 'staging'),
+    maxAge: 5*24*60*60 * 1000
+  }
+};
+
+// setup sessions
+const sessionHandler = session(sessionConfig);
+const sharedSession = require("express-socket.io-session");
  
+// setup 
 const title = 'gobuzzyourself'
+
+// app configuration
+// the number of seconds to step the clock up or down when the host changes the time
 const timeStep = 5;
 
-// module configuration
+// module configuration 
 app.disable('x-powered-by');
 log.timestamp = true
 
+// set up the logger
+app.use(
+  expressWinston.logger({
+    winstonInstance: global.logger
+  })
+);
+
 // Use express-session middleware for express
-app.use(session);
+app.use(sessionHandler);
 
 // zero out stats
 var statObj = { 'connections' : 0,
@@ -97,6 +124,10 @@ if (process.env.NODE_ENV === 'production') {
 app.get('/healthcheck', function(req, res){
   res.send('OK');
 });
+ 
+app.get('/mysession', function(req, res) {
+  res.send(req.session.id);
+});
 
 app.get('/status', function(req, res){
   res.setHeader("Content-Type", "application/json");
@@ -105,13 +136,13 @@ app.get('/status', function(req, res){
 
 // Use shared session middleware for socket.io
 // setting autoSave:true
-io.use(sharedsession(session, {
+io.use(sharedSession(sessionHandler, {
   autoSave:true
 })); 
 
 io.on('connection', (socket) => {
   var clientIP = socket.request.connection.remoteAddress;
-  log.info(`${clientIP} - (socket ${socket.id}) connected`);
+  log.info(`${clientIP} - (socket ${socket.id} / session ${socket.handshake.session}) connected`);
 
   statObj.connections++;
   statObj.connected++;
@@ -285,7 +316,7 @@ io.on('connection', (socket) => {
     let scoreTransit = JSON.stringify(Array.from(data.scores));
     io.emit('scoreupdate', scoreTransit);
 
-    log.info(`${socket.request.connection.remoteAddress} - (socket ${socket.id}) disconnected`);
+    log.info(`${socket.request.connection.remoteAddress} - (socket ${socket.id} / session ${socket.handshake.session.id}) disconnected`);
   });
 
 
