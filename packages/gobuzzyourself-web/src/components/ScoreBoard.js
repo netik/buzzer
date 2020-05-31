@@ -25,9 +25,9 @@ const ScoreBoard = (props) => {
     };  
 
     console.log('scorerender');
-     let lines = null;
+    let lines = null;
 
-     if (props.scores) {
+    if (props.scores) {
       let lineArray = Array.from(props.scores.entries());
       // make sure there's at least four columns at the bottom.
       if (lineArray.length !== 4) { 
@@ -96,7 +96,7 @@ const ScoreBoard = (props) => {
           );
       });
       setScores(lines);
-      }
+    }
   }, [props.socket, props.scores,props.lastBuzz, props.host]);
 
   return (

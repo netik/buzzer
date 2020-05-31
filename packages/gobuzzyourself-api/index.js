@@ -7,12 +7,23 @@ const server = http.Server(app);
 const io = socketio(server);
 const log = require('npmlog-ts')
 
+const session = require("express-session")({
+  secret: process.env.SECRET ? process.env.SECRET : "secretsecret",
+  resave: true,
+  saveUninitialized: true
+});
+
+const sharedsession = require("express-socket.io-session");
+ 
 const title = 'gobuzzyourself'
 const timeStep = 5;
 
 // module configuration
 app.disable('x-powered-by');
 log.timestamp = true
+
+// Use express-session middleware for express
+app.use(session);
 
 // zero out stats
 var statObj = { 'connections' : 0,
@@ -91,6 +102,12 @@ app.get('/status', function(req, res){
   res.setHeader("Content-Type", "application/json");
   res.send(JSON.stringify(statObj) + "\n");
 });
+
+// Use shared session middleware for socket.io
+// setting autoSave:true
+io.use(sharedsession(session, {
+  autoSave:true
+})); 
 
 io.on('connection', (socket) => {
   var clientIP = socket.request.connection.remoteAddress;
