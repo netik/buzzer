@@ -40,7 +40,6 @@ const timeStep = 5;
 
 // module configuration 
 app.disable('x-powered-by');
-log.timestamp = true
 
 // set up the logger
 app.use(
@@ -278,7 +277,7 @@ io.on('connection', (socket) => {
   socket.on('scoreup', (id) => {
     let oldobj = data.scores.get(id);
     if (!oldobj) { 
-      console.log(`scoreup: can't find ${id}`);
+      global.logger.info(`scoreup: can't find ${id}`);
       return 
     }
     data.scores.set(id, { 
@@ -293,7 +292,7 @@ io.on('connection', (socket) => {
   socket.on('scoredown', (id) => {
     let oldobj = data.scores.get(id);
     if (!oldobj) { 
-      console.log(`scoredown: can't find ${id}`);
+      global.logger.info(`scoredown: can't find ${id}`);
       return 
     }
 
