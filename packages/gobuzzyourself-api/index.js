@@ -136,13 +136,14 @@ app.get('/status', function(req, res){
 // Use shared session middleware for socket.io
 // setting autoSave:true
 io.use(sharedSession(sessionHandler, {
-  autoSave:true
+  autoSave: true
 })); 
 
 io.on('connection', (socket) => {
   var clientIP = socket.request.connection.remoteAddress;
-  log.info(`${clientIP} - (socket ${socket.id} / session ${socket.handshake.session}) connected`);
-
+  log.info(`${clientIP} - (socket ${socket.id} / session ${socket.handshake.session.id}) connected`);
+  log.info(JSON.stringify(socket.handshake.session));
+  
   statObj.connections++;
   statObj.connected++;
 
