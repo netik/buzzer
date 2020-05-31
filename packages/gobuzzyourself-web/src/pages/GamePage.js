@@ -26,7 +26,13 @@ const GamePage = (props) => {
 
   return (
     <div>
-      <NavBar socket={props.mainSocket} user={props.user}/>
+      <NavBar 
+        user={props.user} 
+        socket={props.mainSocket}
+        audioObj={props.audioObj} 
+        audioLocked={props.audioLocked}
+        setAudioLockedCallback={props.setAudioLockedCallback}
+      />
       {sockErrorComp}
       <DTHeader/>
       <TimeClock 

@@ -111,9 +111,7 @@ const getData = () => ({
 app.use(sessionMiddleware);
 
 io.use((socket, next) => {
-  console.log("firing!");
-  console.log(socket.request.headers);
-  sessionMiddleware(socket.request, {}, next);
+    sessionMiddleware(socket.request, {}, next);
 });
 
 // set up cors
@@ -155,15 +153,15 @@ app.get('/status', function(req, res){
 
 io.on('connection', (socket) => {
   var clientIP = socket.request.connection.remoteAddress;
-  log.info(`${clientIP} - (socket ${socket.id} / session ${socket.request.session.id}) connected`);
-  log.info(JSON.stringify(socket.handshake.session));
+  global.logger.info(`${clientIP} - (socket ${socket.id} / session ${socket.request.session.id}) connected`);
   
   // update a counter for a test.
   const session = socket.request.session;
+
+  // this connection counter is primarily for debugging only.
   if (! session.connections) { session.connections = 0; }
   session.connections++;
   session.save();
-  console.log(session.connections);
 
   statObj.connections++;
   statObj.connected++;
@@ -180,7 +178,7 @@ io.on('connection', (socket) => {
     socket.emit('joined', user);
 
     // tell everyone else who is here
-    log.info(`${socket.id}: ${user.name} joined!`)
+    global.logger.info(`${socket.id}: ${user.name} joined!`)
     let scoreTransit = JSON.stringify(Array.from(data.scores));
     io.emit('scoreupdate', scoreTransit);
 
@@ -202,7 +200,7 @@ io.on('connection', (socket) => {
 
     // debounce
     if (data.lastbuzz == socket.id) {
-      log.info(`${socket.id}: drop duplicate buzz`);
+      global.logger.info(`${socket.id}: drop duplicate buzz`);
       return;
     }
 
@@ -215,7 +213,7 @@ io.on('connection', (socket) => {
 
     data.lastbuzz = socket.id;
     io.emit('lastbuzz', { id: data.lastbuzz, name: data.users.get(socket.id).name });
-    log.info(`${socket.id}: ${data.users.get(socket.id).name} buzzed in!`);
+    global.logger.info(`${socket.id}: ${data.users.get(socket.id).name} buzzed in!`);
   })
 
   socket.on('getscores', () => {
@@ -230,7 +228,7 @@ io.on('connection', (socket) => {
 
     data.lastbuzz = undefined;
     io.emit('lastbuzz', data.lastbuzz)
-    log.info(`Clear lastbuzz`)
+    global.logger.info(`Clear lastbuzz`)
   })
 
   socket.on('resetclock', () => {
@@ -243,7 +241,7 @@ io.on('connection', (socket) => {
     data.lastbuzz = undefined;
     io.emit('lastbuzz', data.lastbuzz)
     io.emit('tick', { timeRemain: data.timeRemain, clockRunning: data.clockRunning });
-    log.info(`Reset Clock`)
+    global.logger.info(`Reset Clock`)
   });
 
   socket.on('resetscores', () => {
@@ -269,14 +267,14 @@ io.on('connection', (socket) => {
     data.lastbuzz = undefined;
     io.emit('lastbuzz', data.lastbuzz)
     io.emit('tick', { timeRemain: data.timeRemain, clockRunning: data.clockRunning });
-    log.info(`Start clock with ${data.timeRemain}`);
+    global.logger.info(`Start clock with ${data.timeRemain}`);
   });
  
   socket.on('addtime', () => {
     statObj.msg_addtime++;
     data.timeRemain = data.timeRemain + timeStep;
     io.emit('tick', { timeRemain: data.timeRemain, clockRunning: data.clockRunning });
-    log.info(`Add time (+${timeStep}) - now ${data.timeRemain}`);
+    global.logger.info(`Add time (+${timeStep}) - now ${data.timeRemain}`);
   });
 
   socket.on('subtime', () => {
@@ -284,7 +282,7 @@ io.on('connection', (socket) => {
 
     data.timeRemain = data.timeRemain - timeStep;
     io.emit('tick', { timeRemain: data.timeRemain, clockRunning: data.clockRunning });
-    log.info(`Subtract time (-${timeStep}) - now ${data.timeRemain}`);
+    global.logger.info(`Subtract time (-${timeStep}) - now ${data.timeRemain}`);
   });
 
   socket.on('pauseclock', () => {
@@ -293,7 +291,7 @@ io.on('connection', (socket) => {
     data.lockout = true;
     io.emit('lockout', data.lockout);
     io.emit('tick', { timeRemain: data.timeRemain, clockRunning: data.clockRunning });
-    log.info(`Pause clock with ${data.timeRemain}`);
+    global.logger.info(`Pause clock with ${data.timeRemain}`);
   })
 
   socket.on('scoreup', (id) => {
@@ -337,7 +335,7 @@ io.on('connection', (socket) => {
     let scoreTransit = JSON.stringify(Array.from(data.scores));
     io.emit('scoreupdate', scoreTransit);
 
-    log.info(`${socket.request.connection.remoteAddress} - (socket ${socket.id} / session ${socket.request.session.id}) disconnected`);
+    global.logger.info(`${socket.request.connection.remoteAddress} - (socket ${socket.id} / session ${socket.request.session.id}) disconnected`);
   });
 
 
@@ -361,5 +359,5 @@ function fireTick() {
 const timer = setInterval(fireTick, 1000);
 const port = process.env.PORT ? process.env.PORT : 8090;
 
-server.listen(port, () => log.info(`Listening on TCP port ${port}`))
+server.listen(port, () => global.logger.info(`Listening on TCP port ${port}`))
 

@@ -47,18 +47,6 @@ library.add(
 // API server
 const ENDPOINT=process.env.REACT_APP_API_HOST ? process.env.REACT_APP_API_HOST : "http://localhost:8090";
 
-var nothing = new Audio('/sounds/silence.mp3');
-
-let audioLocked;
-// if we can't play silence we have to disable audio.
-window.onload = () => {
-  nothing.play().then(() => {
-    console.log('Audio started unlocked!');
-  }).catch((e) => {
-    alert('Audio started locked' + e)
-  });
-};
-
 // set up our heartbeat
 function App() {
   const [mainSocket, setMainSocket] = useState(null);
@@ -72,6 +60,9 @@ function App() {
   const [socketWatchdog, setSocketWatchdog] = useState(0);
   const [isBuzzing, setIsBuzzing] = useState(false);
   const [isTimeout, setIsTimeout] = useState(false);
+  // eslint-disable-next-line no-unused-vars
+  const [audioLocked, setAudioLocked] = useState(true);
+  const [audioObj, setAudioObj ] = useState(null);
 
   // in this simple app the top-level App class will manage state and 
   // pass the socket down to children for communications with the server
@@ -92,6 +83,29 @@ function App() {
   const handleTimeoutDone = () => {
     setIsTimeout(false);
   };
+  const setAudioLockedCallback = (newValue) => {
+    setAudioLocked(newValue);
+  };
+
+  useEffect( () => {
+    // determine if we're sandboxed for audio (Chrome, Safari)
+    // if we can't play silence we have to disable audio.
+
+    if (!audioObj) {
+      const myAudioObj = new Audio('sounds/silence.mp3');
+      setAudioObj(myAudioObj);
+
+      myAudioObj.play().then(() => {
+        console.log('Audio started unlocked!');
+        setAudioLocked(false);
+      }).catch((e) => {
+        console.log('Audio is locked :(');
+        console.log(e);
+        setAudioLocked(true);
+      });
+
+    }
+  },[audioObj, setAudioLocked]);
 
   useEffect(function setupSocket() { 
 
@@ -209,6 +223,9 @@ function App() {
           user={user}
           mainSocket={mainSocket}
           socketError={socketError}
+          audioObj={audioObj}
+          audioLocked={audioLocked}
+          setAudioLockedCallback={setAudioLockedCallback}
         />
       </Route>
       <Route exact path="/game">
@@ -221,6 +238,9 @@ function App() {
           lastBuzz={lastBuzz}
           buzzerDisabled={buzzerDisabled}
           scores={scores}
+          audioObj={audioObj}
+          audioLocked={audioLocked}
+          setAudioLockedCallback={setAudioLockedCallback}
         />
       </Route>
       <Route exact path="/host">
@@ -232,7 +252,11 @@ function App() {
           isRunning={isRunning}
           lastBuzz={lastBuzz}
           buzzerDisabled={buzzerDisabled}
-          scores={scores}/>
+          scores={scores}
+          audioObj={audioObj}
+          audioLocked={audioLocked}
+          setAudioLockedCallback={setAudioLockedCallback}
+        />
       </Route>
       <Route exact path="/scores">
         <ScorePage  
@@ -243,7 +267,11 @@ function App() {
           isRunning={isRunning}
           lastBuzz={lastBuzz}
           buzzerDisabled={buzzerDisabled}
-          scores={scores}/>
+          scores={scores}
+          audioObj={audioObj}
+          audioLocked={audioLocked}
+          setAudioLockedCallback={setAudioLockedCallback}
+        />
       </Route>
       <Route exact path="/logout">
         <LogoutPage user/>

@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import {
+  Button,
   Collapse,
   Navbar,
   NavbarToggler,
@@ -17,11 +18,21 @@ import {
 const NavBar = (props) => {
   const [isOpen, setIsOpen] = useState(false);
   const [rightIsOpen, setRightIsOpen] = useState(false);
-
   const toggle = () => setIsOpen(!isOpen);
   const rightToggle =  () => setRightIsOpen(!rightIsOpen);
 
   let loggedInMenu;
+
+  const attemptUnlock = (props) => {
+    props.audioObj.play().then(() => {
+      console.log('Audio OK!');
+      // turn this off, we're good!
+      props.setAudioLockedCallback(false);
+    }).catch((e) => {
+        console.log('Audio is locked :(');
+        console.log(e);
+    });
+  };
 
   if (props.user) {
     loggedInMenu = (
@@ -52,6 +63,11 @@ const NavBar = (props) => {
               <NavLink href="https://github.com/netik/buzzer">Source</NavLink>
             </NavItem>
           </Nav>
+          { props.audioLocked &&
+           <Button onClick={() => { attemptUnlock(props) }}>
+            Unmute Audio
+           </Button> 
+           }
           <NavbarText style={{padding:0}}>
           {loggedInMenu}
           </NavbarText>

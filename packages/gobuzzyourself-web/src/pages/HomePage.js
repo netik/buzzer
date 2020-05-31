@@ -25,7 +25,14 @@ const HomePage = (props) => {
 
   return (
     <div>
-      <NavBar user={props.user} />
+      <NavBar 
+        user={props.user} 
+        socket={props.mainSocket}
+        audioObj={props.audioObj} 
+        audioLocked={props.audioLocked} 
+        setAudioLockedCallback={props.setAudioLockedCallback}
+      />
+
       {sockErrorComp}
       <LoginBox socket={props.mainSocket} user={props.user}/>
     </div>
