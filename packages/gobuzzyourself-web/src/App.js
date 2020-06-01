@@ -1,16 +1,17 @@
-import React, { useState, useEffect, useCallback } from "react";
+import React, { useState, useEffect, useRef, useCallback } from "react";
 import {
   BrowserRouter,
   Route,
 } from "react-router-dom";
 
-import Sound from 'react-sound';
 import HomePage from './pages/HomePage';
 import GamePage from './pages/GamePage';
 import ScorePage from './pages/ScorePage';
 import HostPage from './pages/HostPage';
 import LogoutPage from './pages/LogoutPage';
 import useInterval from './useInterval';
+
+import soundTable from './soundTable';
 
 import './App.css';
 import io from 'socket.io-client';
@@ -26,6 +27,7 @@ import {
   faHistory,
   faPlusSquare,
   faMinusSquare,
+  faVolumeUp,
   faCircle,
   faSquare,
   faStop
@@ -36,6 +38,7 @@ library.add(
   faMinusCircle,
   faPlusSquare,
   faMinusSquare,
+  faVolumeUp,
   faPause,
   faPlay,
   faTrash,
@@ -58,11 +61,19 @@ function App() {
   const [user, setUser] = useState(null);
   const [scores, setScores] = useState(null);
   const [socketWatchdog, setSocketWatchdog] = useState(0);
-  const [isBuzzing, setIsBuzzing] = useState(false);
-  const [isTimeout, setIsTimeout] = useState(false);
+  
   // eslint-disable-next-line no-unused-vars
+  const audioObj = useRef(new Audio('sounds/sprite.mp3'));
   const [audioLocked, setAudioLocked] = useState(true);
-  const [audioObj, setAudioObj ] = useState(null);
+  const soundEnd = useRef(0);
+
+  // this implements end-of-sprite audio stopping
+  audioObj.current.addEventListener('timeupdate', function(ev) {
+    console.log(audioObj.current.currentTime);
+    if (audioObj.current.currentTime > soundEnd.current) {
+      audioObj.current.pause();
+    }
+  },false);
 
   // in this simple app the top-level App class will manage state and 
   // pass the socket down to children for communications with the server
@@ -76,48 +87,40 @@ function App() {
     }
   },1000);
 
-  // These functions stop our sounds
-  const handleBuzzDone =  () => {
-    setIsBuzzing(false);
-  };
-  const handleTimeoutDone = () => {
-    setIsTimeout(false);
-  };
-  const setAudioLockedCallback = (newValue) => {
-    setAudioLocked(newValue);
-  };
+  // toggles the state in this component when NavBar button clicked
+  const playSound = useCallback((sound)  => {
+    if (audioLocked.current) { 
+      console.log('ignoring play request because audio still locked'); 
+      return;
+    } // this will stop us from playing on devices that don't support it.
 
-
-  const playSound = loc  => {
-    const myAudioObj = new Audio(loc);
-    myAudioObj.play();
-  };
+    // look up the sound in the sprite table
+    audioObj.current.currentTime = soundTable.spritemap[sound].start;
+    soundEnd.current = soundTable.spritemap[sound].end;
+    audioObj.current.play();
+  }, [audioLocked]);
 
   useEffect( () => {
-    // determine if we're sandboxed for audio (Chrome, Safari)
-    // if we can't play silence we have to disable audio.
-
-    if (!audioObj) {
-      const myAudioObj = new Audio('sounds/silence.mp3');
-
-      console.log("setting audio object");
-
-      myAudioObj.play().then(() => {
-        console.log('Audio started unlocked!');
-        setAudioObj(myAudioObj);
-        setAudioLocked(false);
-      }).catch((e) => {
-        console.log('Audio is locked :(');
-        console.log(e);
-        setAudioObj(myAudioObj);
+    // this is a workaround for audio sand boxing.
+    console.log('fires');
+    if (!audioLocked) {
+      try {
+        audioObj.current.play();
+        audioObj.current.pause();
+        console.log('beep');
+        playSound('beep');
+      } catch (e) {
+        console.log('Audio is still locked :(');
         setAudioLocked(true);
-      });
+        console.log(e);
+      }
 
-    }
-  },[audioObj, setAudioLocked]);
+      return;
+    } 
+  },[audioObj, mainSocket, setAudioLocked, audioLocked, playSound]);
 
   useEffect(function setupSocket() { 
-    if (! mainSocket) {
+  if (! mainSocket) {
       console.log('socketsetup');
 
       const s = io(ENDPOINT);
@@ -134,17 +137,16 @@ function App() {
         s.emit('pong', echo);
       });
 
+      s.on('soundbuzz', (echo) => {
+        console.log('got buzz');
+        playSound('buzz');
+      });
+
       s.on('tick', (data) => {
         setTimeRemain(data.timeRemain);
         setIsRunning(data.clockRunning);
         setSocketWatchdog(0); // all good, we're hearing heartbeats.
         setSocketError(null);
-      });
-
-      s.on('timesup', (data) => {
-        console.log('timesup');
-        playSound("sounds/timeup.mp3");        
-        setIsTimeout(true);
       });
 
       s.on('joined', (data) => {
@@ -168,17 +170,18 @@ function App() {
           setBuzzerDisabled(false);
         }
       });
+  
+      s.on('timesup', (data) => {
+        console.log('timesup');
+        playSound("timeup");        
+      });
 
       s.on('lastbuzz', (data) => {
         console.log(data);
         if (data !== null) {
-          audioObj.src = "sounds/buzz.mp3";
-          audioObj.play();
-
-          setIsBuzzing(true);
+          playSound('buzz');
           setLastBuzz(data);
         } else {
-          setIsBuzzing(false);
           setLastBuzz(null);
         }
       });
@@ -200,48 +203,20 @@ function App() {
         s.emit('getscores');
       }
     }
-  },[mainSocket, timeRemain, lastBuzz, buzzerDisabled, user]);
+  },[audioObj, mainSocket, timeRemain, lastBuzz, buzzerDisabled, user, setAudioLocked, audioLocked, playSound]);
 
   // render -------------------------------------------------------
 
-  // handle sounds
-  let buzzSound = null;
-/*
-  if (isBuzzing) {
-    buzzSound = (<Sound
-     url="sounds/buzz.mp3"
-     playStatus={Sound.status.PLAYING}
-     onFinishedPlaying={handleBuzzDone}
-     autoLoad={true}
-     ignoreMobileRestrictions={true}
-    />);
-  }
-*/
-
-  let timeoutSound = null;
-  /*
-  if (isTimeout) {
-    timeoutSound = (<Sound
-     url="sounds/timeup.mp3"
-     playStatus={Sound.status.PLAYING}
-     onFinishedPlaying={handleTimeoutDone}
-     autoLoad={true}
-     ignoreMobileRestrictions={true}
-    />);
-  }
-  */
-
   return (
     <BrowserRouter>
-      {buzzSound}{timeoutSound}
       <Route exact path="/">
         <HomePage 
           user={user}
           mainSocket={mainSocket}
           socketError={socketError}
-          audioObj={audioObj}
+          audioObj={audioObj.current}
           audioLocked={audioLocked}
-          setAudioLockedCallback={setAudioLockedCallback}
+          setAudioLockedCallback={setAudioLocked}
         />
       </Route>
       <Route exact path="/game">
@@ -256,7 +231,7 @@ function App() {
           scores={scores}
           audioObj={audioObj}
           audioLocked={audioLocked}
-          setAudioLockedCallback={setAudioLockedCallback}
+          setAudioLockedCallback={setAudioLocked}
         />
       </Route>
       <Route exact path="/host">
@@ -271,7 +246,7 @@ function App() {
           scores={scores}
           audioObj={audioObj}
           audioLocked={audioLocked}
-          setAudioLockedCallback={setAudioLockedCallback}
+          setAudioLockedCallback={setAudioLocked}
         />
       </Route>
       <Route exact path="/scores">
@@ -286,7 +261,7 @@ function App() {
           scores={scores}
           audioObj={audioObj}
           audioLocked={audioLocked}
-          setAudioLockedCallback={setAudioLockedCallback}
+          setAudioLockedCallback={setAudioLocked}
         />
       </Route>
       <Route exact path="/logout">

@@ -24,7 +24,6 @@ const ScoreBoard = (props) => {
       }
     };  
 
-    console.log('scorerender');
     let lines = null;
 
     if (props.scores) {
@@ -43,7 +42,6 @@ const ScoreBoard = (props) => {
 
         // if this card buzzed in, make it blue.
         if (key[0] === props.lastBuzz?.id) {
-          console.log('set style');
           style={ "backgroundColor":"blue" }
         }
 

@@ -16,6 +16,8 @@ import {
   NavbarText
 } from 'reactstrap';
 
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+
 const NavBar = (props) => {
   const [isOpen, setIsOpen] = useState(false);
   const [rightIsOpen, setRightIsOpen] = useState(false);
@@ -25,14 +27,7 @@ const NavBar = (props) => {
   let loggedInMenu;
 
   const attemptUnlock = (props) => {
-    props.audioObj.play().then(() => {
-      console.log('Audio OK!');
-      // turn this off, we're good!
-      props.setAudioLockedCallback(false);
-    }).catch((e) => {
-        console.log('Audio is locked :(');
-        console.log(e);
-    });
+    props.setAudioLockedCallback(false);
   };
 
   if (props.user) {
@@ -74,11 +69,12 @@ const NavBar = (props) => {
              <Button 
                className="btn btn-success" 
                onClick={() => { attemptUnlock(props) }}>
-               Permit Audio
+               <FontAwesomeIcon icon="volume-up" />
+               <span style={{ paddingLeft: '10px'}}>Permit Audio</span>
              </Button>
              {" "}
               <span style={{ paddingLeft: '10px'}}>
-                Your browser is blocking some sounds. Please click 'Permit Autoplay' to hear all game sounds. 
+                Your browser is blocking some sounds. Please click 'Permit Audio' to hear all game sounds. 
               </span>
             </Alert>
            }

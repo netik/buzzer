@@ -325,7 +325,11 @@ io.on('connection', (socket) => {
     io.emit('scoreupdate', scoreTransit);
   });
   
-  socket.on('disconnect', function () {
+  socket.on('soundbuzz', () => {
+    io.emit('soundbuzz');
+  });
+
+  socket.on('disconnect', () => {
     // user disconnected, remove them from our state
     statObj.connected--;
     statObj.msg_disconnect++;

@@ -42,6 +42,9 @@ const HostPage = (props) => {
   const handleResetScores = () => {
     props.mainSocket.emit('resetscores')
   };
+  const handleSendBuzzer = () => {
+    props.mainSocket.emit('soundbuzz')
+  };
   
   if (props.socketError != null) {
     sockErrorComp = (<Alert color="danger">{props.socketError}</Alert>);
@@ -92,14 +95,14 @@ const HostPage = (props) => {
     {' '}
     <Button 
       onClick={handlePauseClock}
-      color="warning"
+      color="danger"
       style={{"margin":"10px"}}>
-      <FontAwesomeIcon icon="pause"/> Pause Clock
+      <FontAwesomeIcon icon="stop"/> Stop Clock
     </Button>
     {' '}
     <Button
       onClick={handleClear}
-      color="success"
+      color="info"
       style={{"margin":"10px"}}>
       <FontAwesomeIcon icon="circle"/> Clear Buzzes
     </Button>
@@ -116,6 +119,12 @@ const HostPage = (props) => {
       color="danger"
       style={{"margin":"10px"}}>
       <FontAwesomeIcon icon="trash"/> Reset Scores
+    </Button>
+    <Button
+      onClick={handleSendBuzzer}
+      color="danger"
+      style={{"margin":"10px"}}>
+      <FontAwesomeIcon icon="volume-up"/> Buzz Everyone
     </Button>
     </Col>
     </Row>
