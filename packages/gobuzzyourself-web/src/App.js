@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import {
   BrowserRouter,
   Route,
@@ -87,20 +87,29 @@ function App() {
     setAudioLocked(newValue);
   };
 
+
+  const playSound = loc  => {
+    const myAudioObj = new Audio(loc);
+    myAudioObj.play();
+  };
+
   useEffect( () => {
     // determine if we're sandboxed for audio (Chrome, Safari)
     // if we can't play silence we have to disable audio.
 
     if (!audioObj) {
       const myAudioObj = new Audio('sounds/silence.mp3');
-      setAudioObj(myAudioObj);
+
+      console.log("setting audio object");
 
       myAudioObj.play().then(() => {
         console.log('Audio started unlocked!');
+        setAudioObj(myAudioObj);
         setAudioLocked(false);
       }).catch((e) => {
         console.log('Audio is locked :(');
         console.log(e);
+        setAudioObj(myAudioObj);
         setAudioLocked(true);
       });
 
@@ -108,7 +117,6 @@ function App() {
   },[audioObj, setAudioLocked]);
 
   useEffect(function setupSocket() { 
-
     if (! mainSocket) {
       console.log('socketsetup');
 
@@ -135,6 +143,7 @@ function App() {
 
       s.on('timesup', (data) => {
         console.log('timesup');
+        playSound("sounds/timeup.mp3");        
         setIsTimeout(true);
       });
 
@@ -163,6 +172,9 @@ function App() {
       s.on('lastbuzz', (data) => {
         console.log(data);
         if (data !== null) {
+          audioObj.src = "sounds/buzz.mp3";
+          audioObj.play();
+
           setIsBuzzing(true);
           setLastBuzz(data);
         } else {
@@ -194,6 +206,7 @@ function App() {
 
   // handle sounds
   let buzzSound = null;
+/*
   if (isBuzzing) {
     buzzSound = (<Sound
      url="sounds/buzz.mp3"
@@ -203,10 +216,12 @@ function App() {
      ignoreMobileRestrictions={true}
     />);
   }
+*/
 
   let timeoutSound = null;
+  /*
   if (isTimeout) {
-    buzzSound = (<Sound
+    timeoutSound = (<Sound
      url="sounds/timeup.mp3"
      playStatus={Sound.status.PLAYING}
      onFinishedPlaying={handleTimeoutDone}
@@ -214,6 +229,7 @@ function App() {
      ignoreMobileRestrictions={true}
     />);
   }
+  */
 
   return (
     <BrowserRouter>

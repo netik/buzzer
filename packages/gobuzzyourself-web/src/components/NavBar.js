@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import {
+  Alert,
   Button,
   Collapse,
   Navbar,
@@ -63,18 +64,27 @@ const NavBar = (props) => {
               <NavLink href="https://github.com/netik/buzzer">Source</NavLink>
             </NavItem>
           </Nav>
-          { props.audioLocked &&
-           <Button onClick={() => { attemptUnlock(props) }}>
-            Unmute Audio
-           </Button> 
-           }
           <NavbarText style={{padding:0}}>
           {loggedInMenu}
           </NavbarText>
         </Collapse>
       </Navbar>
+      { props.audioLocked &&
+           <Alert color="secondary">
+             <Button 
+               className="btn btn-success" 
+               onClick={() => { attemptUnlock(props) }}>
+               Permit Audio
+             </Button>
+             {" "}
+              <span style={{ paddingLeft: '10px'}}>
+                Your browser is blocking some sounds. Please click 'Permit Autoplay' to hear all game sounds. 
+              </span>
+            </Alert>
+           }
+ 
     </div>
   );
-}
+} 
 
 export default NavBar;
