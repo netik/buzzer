@@ -16,10 +16,12 @@ const Redis = require('redis');
 const RedisStore = require('connect-redis')(session);
 
 // Redis Client instance for sessions ----------------------
-let redisClient = Redis.createClient({
-  host: 'localhost',
-  port: 6379
-});
+let redisClient = Redis.createClient(process.env.REDIS_URL ? process.env.REDIS_URL :
+  {
+    host: 'localhost',
+    port: 6379
+  }
+);
 
 global.logger = logger;
 
