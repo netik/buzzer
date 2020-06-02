@@ -16,6 +16,8 @@ import {
   NavbarText
 } from 'reactstrap';
 
+import InstallModal from './InstallModal';
+
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 
 const NavBar = (props) => {
@@ -49,6 +51,7 @@ const NavBar = (props) => {
 
   return (
     <div>
+      <InstallModal/>
       <Navbar color="primary" dark expand="md">
         <NavbarBrand href="#">gobuzzyourself</NavbarBrand>
         <NavbarToggler onClick={toggle} />
@@ -78,7 +81,6 @@ const NavBar = (props) => {
               </span>
             </Alert>
            }
- 
     </div>
   );
 } 

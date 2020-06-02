@@ -17,9 +17,11 @@
     "react-router-dom": "^5.2.0",
     "react-scripts": "3.4.1",
     "react-sound": "^1.2.0",
+    "react-transition-group": "^4.4.1",
     "reactstrap": "^8.4.1",
     "socket.io-client": "^2.3.0",
-    "use-sound": "^1.0.2"
+    "use-sound": "^1.0.2",
+    "web-audio-touch-unlock": "^1.0.1"
   },
   "scripts": {
     "staticserver": "node server.js",

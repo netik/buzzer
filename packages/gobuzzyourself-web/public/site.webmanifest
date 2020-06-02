@@ -1,6 +1,7 @@
 {
-  "short_name": "gobuzzyourself",
-  "name": "gobuzzyourself",
+  "short_name": "GoBuzzYourself",
+  "name": "GoBuzzYourself: Game Show Buzzers",
+  "description": "Online Game Show Buzzers",
   "icons": [
     {
       "src": "/android-chrome-192x192.png",
@@ -13,7 +14,9 @@
       "type": "image/png"
     }
   ],
+  "start_url": "/?source=pwa",
+  "display": "standalone",
+  "scope": "/",
   "theme_color": "#ffffff",
-  "background_color": "#000000",
-  "display": "standalone"
+  "background_color": "#000000"
 }
