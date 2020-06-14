@@ -5,6 +5,8 @@ import {
 } from "react-router-dom";
 
 import HomePage from './pages/HomePage';
+import AboutPage from './pages/AboutPage';
+import PrivacyPage from './pages/PrivacyPage';
 import GamePage from './pages/GamePage';
 import ScorePage from './pages/ScorePage';
 import HostPage from './pages/HostPage';
@@ -215,6 +217,36 @@ function App() {
           mainSocket={mainSocket}
           socketError={socketError}
           audioObj={audioObj.current}
+          audioLocked={audioLocked}
+          setAudioLockedCallback={setAudioLocked}
+        />
+      </Route>
+      <Route exact path="/about">
+        <AboutPage 
+          user={user}
+          mainSocket={mainSocket}
+          socketError={socketError}
+          timeRemain={timeRemain}
+          isRunning={isRunning}
+          lastBuzz={lastBuzz}
+          buzzerDisabled={buzzerDisabled}
+          scores={scores}
+          audioObj={audioObj}
+          audioLocked={audioLocked}
+          setAudioLockedCallback={setAudioLocked}
+        />
+      </Route>
+      <Route exact path="/privacy">
+        <PrivacyPage 
+          user={user}
+          mainSocket={mainSocket}
+          socketError={socketError}
+          timeRemain={timeRemain}
+          isRunning={isRunning}
+          lastBuzz={lastBuzz}
+          buzzerDisabled={buzzerDisabled}
+          scores={scores}
+          audioObj={audioObj}
           audioLocked={audioLocked}
           setAudioLockedCallback={setAudioLocked}
         />

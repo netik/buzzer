@@ -9,6 +9,7 @@ import {
   Nav,
   NavItem,
   NavLink,
+  UncontrolledDropdown,
   Dropdown,
   DropdownToggle,
   DropdownItem,
@@ -58,9 +59,24 @@ const NavBar = (props) => {
 
         <Collapse isOpen={isOpen} navbar>
           <Nav className="mr-auto" navbar>
-            <NavItem>
-              <NavLink href="https://github.com/netik/buzzer">Source</NavLink>
-            </NavItem>
+          <UncontrolledDropdown nav inNavbar>
+              <DropdownToggle nav caret>
+                Help
+              </DropdownToggle>
+              <DropdownMenu right>
+                <DropdownItem>
+                  About
+                </DropdownItem>
+                <DropdownItem>
+                  Privacy
+                </DropdownItem>
+                <DropdownItem divider />
+                <DropdownItem>
+                  Get Source
+                </DropdownItem>
+              </DropdownMenu>
+            </UncontrolledDropdown>
+
           </Nav>
           <NavbarText style={{padding:0}}>
           {loggedInMenu}

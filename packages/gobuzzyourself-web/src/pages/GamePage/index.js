@@ -1,19 +1,29 @@
+import NavBar from "../../components/NavBar";
+import Buzzer from "../../components/Buzzer";
+import DTHeader from "../../components/DTHeader";
+import TimeClock from "../../components/TimeClock";
+import ScoreBoard from "../../components/ScoreBoard";
 import React from "react";
-import NavBar from "../components/NavBar";
-import DTHeader from "../components/DTHeader";
-import TimeClock from "../components/TimeClock";
-import ScoreBoard from "../components/ScoreBoard";
+import {
+  Redirect
+} from "react-router-dom";
 
 import {
-  Alert,
+  Alert
 } from "reactstrap";
 
-const ScorePage = (props) => {
+const GamePage = (props) => {
   let sockErrorComp = null;
-
   if (props.socketError != null) {
     sockErrorComp = (<Alert color="danger">{props.socketError}</Alert>);
   }
+  
+  if (!props.user) {
+    return (
+      <Redirect to='/'/>
+    )
+  }
+
   return (
     <div>
       <NavBar 
@@ -27,21 +37,24 @@ const ScorePage = (props) => {
       <DTHeader/>
       <TimeClock 
         socket={props.mainSocket} 
-        user={props.user}
+        user={props.user} 
         lastBuzz={props.lastBuzz}
         isRunning={props.isRunning}
         timeRemain={props.timeRemain} 
-        buzzerDisabled={props.buzzerDisabled}
-      />
-      <ScoreBoard 
+        buzzerDisabled={props.buzzerDisabled}/>
+      <Buzzer 
         socket={props.mainSocket} 
         user={props.user} 
-        scores={props.scores}
+        buzzerDisabled={props.buzzerDisabled}/>
+      <ScoreBoard 
+        socket={props.mainSocket} 
         lastBuzz={props.lastBuzz}
-        buzzerDisabled={props.buzzerDisabled}
-      />
+        user={props.user} 
+        scores={props.scores} 
+        buzzerDisabled={props.buzzerDisabled}/>
     </div>
-  )
+  );
 }
 
-export default ScorePage;
+export default GamePage;
+

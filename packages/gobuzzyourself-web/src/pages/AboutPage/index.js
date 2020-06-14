@@ -1,8 +1,8 @@
-import NavBar from "../components/NavBar";
-import Buzzer from "../components/Buzzer";
-import DTHeader from "../components/DTHeader";
-import TimeClock from "../components/TimeClock";
-import ScoreBoard from "../components/ScoreBoard";
+import NavBar from "../../components/NavBar";
+import Buzzer from "../../components/Buzzer";
+import DTHeader from "../../components/DTHeader";
+import TimeClock from "../../components/TimeClock";
+import ScoreBoard from "../../components/ScoreBoard";
 import React from "react";
 import {
   Redirect
@@ -12,7 +12,7 @@ import {
   Alert
 } from "reactstrap";
 
-const GamePage = (props) => {
+const AboutPage = (props) => {
   let sockErrorComp = null;
   if (props.socketError != null) {
     sockErrorComp = (<Alert color="danger">{props.socketError}</Alert>);
@@ -56,5 +56,5 @@ const GamePage = (props) => {
   );
 }
 
-export default GamePage;
+export default AboutPage;
 
