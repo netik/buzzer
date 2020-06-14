@@ -1,4 +1,7 @@
 import React, { useState } from 'react';
+import { NavLink as RRNavLink } from 'react-router-dom';
+import { NavLink } from 'reactstrap';
+
 import {
   Alert,
   Button,
@@ -7,8 +10,6 @@ import {
   NavbarToggler,
   NavbarBrand,
   Nav,
-  NavItem,
-  NavLink,
   UncontrolledDropdown,
   Dropdown,
   DropdownToggle,
@@ -26,7 +27,7 @@ const NavBar = (props) => {
   const [rightIsOpen, setRightIsOpen] = useState(false);
   const toggle = () => setIsOpen(!isOpen);
   const rightToggle =  () => setRightIsOpen(!rightIsOpen);
-
+  
   let loggedInMenu;
 
   const attemptUnlock = (props) => {
@@ -54,7 +55,7 @@ const NavBar = (props) => {
     <div>
       <InstallModal/>
       <Navbar color="primary" dark expand="md">
-        <NavbarBrand href="#">gobuzzyourself</NavbarBrand>
+        <NavbarBrand href="/">gobuzzyourself</NavbarBrand>
         <NavbarToggler onClick={toggle} />
 
         <Collapse isOpen={isOpen} navbar>
@@ -63,16 +64,18 @@ const NavBar = (props) => {
               <DropdownToggle nav caret>
                 Help
               </DropdownToggle>
-              <DropdownMenu right>
+              <DropdownMenu left>
                 <DropdownItem>
-                  About
+                  <NavLink tag={RRNavLink} exact to="/help/about" activeClassName="active">About</NavLink>
                 </DropdownItem>
                 <DropdownItem>
-                  Privacy
+                  <NavLink tag={RRNavLink} exact to="/help/privacy" activeClassName="active">Privacy</NavLink>
                 </DropdownItem>
                 <DropdownItem divider />
                 <DropdownItem>
-                  Get Source
+                  <a href="https://github.com/netik/buzzer">
+                    Get Source
+                  </a>
                 </DropdownItem>
               </DropdownMenu>
             </UncontrolledDropdown>

@@ -1,15 +1,16 @@
 import NavBar from "../../components/NavBar";
-import Buzzer from "../../components/Buzzer";
 import DTHeader from "../../components/DTHeader";
-import TimeClock from "../../components/TimeClock";
-import ScoreBoard from "../../components/ScoreBoard";
+
 import React from "react";
-import {
-  Redirect
-} from "react-router-dom";
 
 import {
-  Alert
+  Alert,
+  Card,
+  CardBody,
+  CardTitle,
+  CardText,
+  Row,
+  Col
 } from "reactstrap";
 
 const PrivacyPage = (props) => {
@@ -18,12 +19,6 @@ const PrivacyPage = (props) => {
     sockErrorComp = (<Alert color="danger">{props.socketError}</Alert>);
   }
   
-  if (!props.user) {
-    return (
-      <Redirect to='/'/>
-    )
-  }
-
   return (
     <div>
       <NavBar 
@@ -35,23 +30,17 @@ const PrivacyPage = (props) => {
       />
       {sockErrorComp}
       <DTHeader/>
-      <TimeClock 
-        socket={props.mainSocket} 
-        user={props.user} 
-        lastBuzz={props.lastBuzz}
-        isRunning={props.isRunning}
-        timeRemain={props.timeRemain} 
-        buzzerDisabled={props.buzzerDisabled}/>
-      <Buzzer 
-        socket={props.mainSocket} 
-        user={props.user} 
-        buzzerDisabled={props.buzzerDisabled}/>
-      <ScoreBoard 
-        socket={props.mainSocket} 
-        lastBuzz={props.lastBuzz}
-        user={props.user} 
-        scores={props.scores} 
-        buzzerDisabled={props.buzzerDisabled}/>
+      <Row className="justify-content-md-center">
+        <Col md="8">
+        <Card>
+          <CardBody>
+            <CardTitle><h1>Privacy &amp; Security</h1></CardTitle>
+            <hr/>
+            <CardText>Some quick example text to build on the card title and make up the bulk of the card's content.</CardText>
+          </CardBody>
+        </Card>
+        </Col>
+      </Row>
     </div>
   );
 }

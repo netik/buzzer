@@ -221,7 +221,7 @@ function App() {
           setAudioLockedCallback={setAudioLocked}
         />
       </Route>
-      <Route exact path="/about">
+      <Route exact path="/help/about">
         <AboutPage 
           user={user}
           mainSocket={mainSocket}
@@ -236,7 +236,7 @@ function App() {
           setAudioLockedCallback={setAudioLocked}
         />
       </Route>
-      <Route exact path="/privacy">
+      <Route exact path="/help/privacy">
         <PrivacyPage 
           user={user}
           mainSocket={mainSocket}
