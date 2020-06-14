@@ -87,7 +87,6 @@ app.options('*', corsMiddleware);
 
 apollo.applyMiddleware({ app, cors: corsOptions });
 
-
 import config from './config';
 import { GraphQLLocalStrategy, buildContext } from 'graphql-passport';
 import passport from 'passport';
