@@ -15,6 +15,9 @@ const expressWinston = require('express-winston');
 const Redis = require('redis');
 const RedisStore = require('connect-redis')(session);
 
+const httpServer = http.Server(app);
+const io = socketio(httpServer);
+
 const app = express();
 app.use(
   bodyParser.urlencoded({
@@ -84,8 +87,6 @@ app.options('*', corsMiddleware);
 
 apollo.applyMiddleware({ app, cors: corsOptions });
 
-
-const io = socketio(server);
 
 import config from './config';
 import { GraphQLLocalStrategy, buildContext } from 'graphql-passport';
@@ -458,5 +459,4 @@ function fireTick() {
 const timer = setInterval(fireTick, 1000);
 const port = process.env.PORT ? process.env.PORT : 8090;
 
-const httpServer = http.Server(app);
 httpServer.listen(port, () => global.logger.info(`Listening on TCP port ${port}`))

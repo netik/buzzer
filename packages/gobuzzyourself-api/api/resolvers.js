@@ -5,7 +5,7 @@ const resolvers = {
     currentUser: (parent, args, context) => context.getUser(),
   },
   Mutation: {
-    signup: async (parent, { firstName, lastName, email, password }, context) => {
+    signup: async (parent, { firstName, lastName, nickname,   email, password }, context) => {
       const existingUsers = context.User.getUsers();
       const userWithEmailAlreadyExists = !!existingUsers.find(user => user.email === email);
 
@@ -15,6 +15,7 @@ const resolvers = {
 
       const newUser = {
         id: uuid(),
+        nickname,
         firstName,
         lastName,
         email,
