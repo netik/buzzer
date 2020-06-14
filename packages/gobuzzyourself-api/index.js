@@ -2,6 +2,22 @@ const http = require('http')
 const express = require('express')
 const socketio = require('socket.io')
 const session = require('express-session');
+import { GraphQLLocalStrategy, buildContext } from 'graphql-passport';
+
+import express from 'express';
+import passport from 'passport';
+import { GraphQLLocalStrategy } from 'graphql-passport';
+import User from './User';
+
+passport.use(
+  new GraphQLLocalStrategy((email, password, done) => {
+    const users = User.getUsers();
+    const matchingUser = users.find(user => email === user.email && password === user.password);
+    const error = matchingUser ? null : new Error('no matching user');
+    done(error, matchingUser);
+  }),
+);
+
 
 const app = express();
 const server = http.Server(app);
@@ -61,6 +77,14 @@ const timeStep = 5;
 
 // module configuration 
 app.disable('x-powered-by');
+
+// setup apollo
+const server = new ApolloServer({
+  typeDefs,
+  resolvers,
+  context: ({ req, res }) => buildContext({ req, res }),
+});
+
 
 // zero out stats
 var statObj = { 'connections' : 0,
