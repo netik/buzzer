@@ -1,35 +1,98 @@
-const http = require('http')
-const express = require('express')
-const socketio = require('socket.io')
-const session = require('express-session');
-import { GraphQLLocalStrategy, buildContext } from 'graphql-passport';
-
+import http from 'http';
 import express from 'express';
-import passport from 'passport';
-import { GraphQLLocalStrategy } from 'graphql-passport';
-import User from './User';
+import socketio from 'socket.io';
+import session from 'express-session';
 
-passport.use(
-  new GraphQLLocalStrategy((email, password, done) => {
-    const users = User.getUsers();
-    const matchingUser = users.find(user => email === user.email && password === user.password);
-    const error = matchingUser ? null : new Error('no matching user');
-    done(error, matchingUser);
-  }),
-);
+import typeDefs from './api/typeDefs';
+import resolvers from './api/resolvers';
 
+import { ApolloServer } from 'apollo-server-express';
+import bodyParser from 'body-parser';
 
-const app = express();
-const server = http.Server(app);
-const io = socketio(server);
-const log = require('npmlog-ts')
+const { makeExecutableSchema } = require('graphql-tools');
 
 const expressWinston = require('express-winston');
-const serviceLogger = require('./util/service_logger');
-const logger = serviceLogger.logger('api');
-
 const Redis = require('redis');
 const RedisStore = require('connect-redis')(session);
+
+const app = express();
+app.use(
+  bodyParser.urlencoded({
+    extended: true
+  })
+);
+
+app.use(
+  bodyParser.json({
+    inflate: true
+  })
+);
+
+const apollo = new ApolloServer({
+  typeDefs,
+  resolvers,
+  formatError: error => {
+    global.logger.warn(error);
+    return error;
+  },
+  context: async ({ req, res, connection }) => {
+    // this code builds the context for the current request.
+    if (connection) {
+      return connection.context;
+    }
+
+    // return passport's context for now.
+    return buildContext({ req, res, User });
+  },
+  // without these settings, the playground will ignore session parsing.
+  // making life miserable for devs.
+  playground:
+    process.env.NODE_ENV === 'production'
+      ? false
+      : {
+          settings: { 'request.credentials': 'include' }
+        }
+});
+
+
+// Setup CORS headers for local developers
+//
+// If we are on a local development machine, we have to send a
+// proper Access-Control-Allow-Origin header to support sending of
+// credentials via Apollo client. Normally this is set to '*', but
+// if 'credentials: true' is set in the fetch options, wildcards are
+// rejected. In staging and production we handle this via Kong.
+
+const cors = require('cors');
+
+let corsOptions;
+
+if (process.env.NODE_ENV !== 'staging' && process.env.NODE_ENV !== 'production') {
+  corsOptions = {
+    origin: ['http://localhost:8080'],
+    credentials: true,
+    methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
+    optionsSuccessStatus: 200 // some legacy browsers (IE11, various SmartTVs) choke on 204
+  };
+} else {
+  corsOptions = true; // take the defaults
+}
+
+const corsMiddleware = cors(corsOptions);
+app.use(corsMiddleware);
+app.options('*', corsMiddleware);
+
+apollo.applyMiddleware({ app, cors: corsOptions });
+
+
+const io = socketio(server);
+
+import config from './config';
+import { GraphQLLocalStrategy, buildContext } from 'graphql-passport';
+import passport from 'passport';
+import User from './api/User';
+
+// start redis
 
 // Redis Client instance for sessions ----------------------
 let redisClient = Redis.createClient(process.env.REDIS_URL ? process.env.REDIS_URL :
@@ -39,15 +102,38 @@ let redisClient = Redis.createClient(process.env.REDIS_URL ? process.env.REDIS_U
   }
 );
 
-global.logger = logger;
+// GraphQL
+passport.use(
+  new GraphQLLocalStrategy((email, password, done) => {
+    const users = User.getUsers();
+    const matchingUser = users.find(user => email === user.email && password === user.password);
+    const error = matchingUser ? null : new Error('no matching user');
+    done(error, matchingUser);
+  }),
+);
+
+// configure passport
+passport.serializeUser((user, done) => {
+  done(null, user.id);
+});
+
+passport.deserializeUser((id, done) => {
+  const users = User.getUsers();
+  const matchingUser = users.find(user => user.id === id);
+  done(null, matchingUser);
+});
 
 // set up the logger
+const serviceLogger = require('./util/service_logger');
+const logger = serviceLogger.logger('api');
+global.logger = logger;
 app.use(
   expressWinston.logger({
     winstonInstance: logger
   })
 );
 
+// set up sessions
 const sessionConfig = {
   name: 'buzzid',
   secret: process.env.SESSION_SECRET ? process.env.SESSION_SECRET : 'secret',
@@ -64,27 +150,12 @@ const sessionConfig = {
     maxAge: 5*24*60*60 * 1000
   }
 };
-
-// setup sessions
 const sessionMiddleware = session(sessionConfig);
-
-// setup 
-const title = 'gobuzzyourself'
-
-// app configuration
-// the number of seconds to step the clock up or down when the host changes the time
-const timeStep = 5;
 
 // module configuration 
 app.disable('x-powered-by');
 
-// setup apollo
-const server = new ApolloServer({
-  typeDefs,
-  resolvers,
-  context: ({ req, res }) => buildContext({ req, res }),
-});
-
+const server = new ApolloServer({ typeDefs, resolvers });
 
 // zero out stats
 var statObj = { 'connections' : 0,
@@ -161,8 +232,6 @@ if (process.env.NODE_ENV === 'production') {
 } else {
     app.get('/', (req, res) => res.send('Please use an API client to talk to this server.'));
 }
-
-//app.get('/host', (req, res) => res.render('host', Object.assign({ title }, getData())));
 
 app.get('/healthcheck', function(req, res){
   res.send('OK');
@@ -298,17 +367,17 @@ io.on('connection', (socket) => {
  
   socket.on('addtime', () => {
     statObj.msg_addtime++;
-    data.timeRemain = data.timeRemain + timeStep;
+    data.timeRemain = data.timeRemain + config.timeStep;
     io.emit('tick', { timeRemain: data.timeRemain, clockRunning: data.clockRunning });
-    global.logger.info(`Add time (+${timeStep}) - now ${data.timeRemain}`);
+    global.logger.info(`Add time (+${config.timeStep}) - now ${data.timeRemain}`);
   });
 
   socket.on('subtime', () => {
     statObj.msg_subtime++;
 
-    data.timeRemain = data.timeRemain - timeStep;
+    data.timeRemain = data.timeRemain - config.timeStep;
     io.emit('tick', { timeRemain: data.timeRemain, clockRunning: data.clockRunning });
-    global.logger.info(`Subtract time (-${timeStep}) - now ${data.timeRemain}`);
+    global.logger.info(`Subtract time (-${config.timeStep}) - now ${data.timeRemain}`);
   });
 
   socket.on('pauseclock', () => {
@@ -389,5 +458,5 @@ function fireTick() {
 const timer = setInterval(fireTick, 1000);
 const port = process.env.PORT ? process.env.PORT : 8090;
 
-server.listen(port, () => global.logger.info(`Listening on TCP port ${port}`))
-
+const httpServer = http.Server(app);
+httpServer.listen(port, () => global.logger.info(`Listening on TCP port ${port}`))
