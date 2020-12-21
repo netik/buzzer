@@ -1,3 +1,4 @@
+
 {
     "private": true,
     "name": "gobuzzyourself",
@@ -5,6 +6,7 @@
        "packages/*"
     ],
     "scripts": {
-      "heroku-postbuild": "./scripts/heroku.build"
+      "heroku-postbuild": "./scripts/heroku.build",
+      "deploy": "git push heroku-api; git push heroku-web-client"  
     }
 }

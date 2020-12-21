@@ -28,7 +28,7 @@
     "staticserver": "node server.js",
     "start": "react-scripts start",
     "build": "react-scripts build",
-    "deploy": "git push heroku-api; git push heroku-web",
+    "deploy": "git push heroku-web-client",
     "test": "react-scripts test",
     "eject": "react-scripts eject"
   },
