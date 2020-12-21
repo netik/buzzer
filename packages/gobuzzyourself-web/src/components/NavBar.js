@@ -32,18 +32,18 @@ const LatencyDisplay = (props) => {
   let icon;
   let latency = props.latency;
 
-    icon = (<Signal1SVG height="20px" />);
+  icon = (<Signal1SVG height="20px" />);
 
   if (latency <= 500) {
     icon = (<Signal2SVG height="20px" />);
   }
-  if (latency <= 200) {
+  if (latency <= 300) {
     icon = (<Signal3SVG height="20px" />)
   }
-  if (latency <= 100) {
+  if (latency <= 200) {
     icon = (<Signal4SVG height="20px" />);
   }
-  if (latency <= 50) {
+  if (latency <= 125) {
     icon = (<Signal5SVG height="20px" />);
   }
 
