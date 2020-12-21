@@ -45,9 +45,15 @@ const Buzzer = (props) => {
         onClick={handleBuzz}>Buzz</Button>
         {! props.buzzerDisabled &&  
           <p className="text-muted">
-          Hit the <i>Spacebar</i> or click Buzz to Buzz in now!
+          Hit the <i>Space Bar</i> or click Buzz to Buzz in now!
           </p>
         }
+        {props.buzzerDisabled &&  
+          <p className="text-muted">
+            &nbsp;
+          </p>
+        }
+
       </Col>
     </Row>
   );

@@ -9,6 +9,8 @@ const UserDB = require('./api/User');
 const User = require('./api/User.js');
 const resolvers = require('./api/resolvers');
 const app = express();
+const bodyParser = require('body-parser');
+
 const server = http.Server(app);
 const io = socketio(server, {pingInterval: 5000});
 
@@ -39,33 +41,6 @@ app.use(
   })
 );
 
-const apollo = new ApolloServer({
-  typeDefs,
-  resolvers,
-  formatError: error => {
-    global.logger.warn(error);
-    return error;
-  },
-  context: async ({ req, res, connection }) => {
-    // this code builds the context for the current request.
-    if (connection) {
-      return connection.context;
-    }
-
-    // return passport's context for now.
-    return buildContext({ req, res, User });
-  },
-  // without these settings, the playground will ignore session parsing.
-  // making life miserable for devs.
-  playground:
-    process.env.NODE_ENV === 'production'
-      ? false
-      : {
-          settings: { 'request.credentials': 'include' }
-        }
-});
-
-
 // Setup CORS headers for local developers
 //
 // If we are on a local development machine, we have to send a
@@ -93,9 +68,6 @@ const corsMiddleware = cors(corsOptions);
 app.use(corsMiddleware);
 app.options('*', corsMiddleware);
 
-apollo.applyMiddleware({ app, cors: corsOptions });
-
-
 // Redis Client instance for sessions ----------------------
 let redisClient = Redis.createClient(process.env.REDIS_URL ? process.env.REDIS_URL :
   {
@@ -107,7 +79,7 @@ let redisClient = Redis.createClient(process.env.REDIS_URL ? process.env.REDIS_U
 // GraphQL
 passport.use(
   new GraphQLLocalStrategy((email, password, done) => {
-    const users = User.getUsers();
+    const users = UserDB.getUsers();
     const matchingUser = users.find(user => email === user.email && password === user.password);
     const error = matchingUser ? null : new Error('no matching user');
     done(error, matchingUser);
@@ -159,19 +131,30 @@ app.disable('x-powered-by');
 
 // setup apollo
 const typeDefs = [User];
-console.log(typeDefs);
 
 const graphQLServer = new ApolloServer({
   typeDefs,
   resolvers,
+  formatError: error => {
+    global.logger.warn(error);
+    return error;
+  },
   playground: {
     endpoint: '/graphql',
     settings: {
-      'editor.theme': 'dark'
+      'editor.theme': 'dark',
+       'request.credentials': 'include'
     }
   },
-  context: ({ req, res }) => buildContext({ req, res })
+  context: ({ req, res,connection }) => {
+    if (connection) {
+      return connection.context;
+    }
+    return buildContext({ req, res, User });
+  }
 });
+
+graphQLServer.applyMiddleware({ app, cors: corsOptions });
 
 // zero out stats
 var statObj = { 'connections' : 0,
@@ -485,4 +468,4 @@ function fireTick() {
 const timer = setInterval(fireTick, 1000);
 const port = process.env.PORT ? process.env.PORT : 8090;
 
-httpServer.listen(port, () => global.logger.info(`Listening on TCP port ${port}`))
+server.listen(port, () => global.logger.info(`Listening on TCP port ${port}`))
