@@ -69,7 +69,10 @@ app.use(corsMiddleware);
 app.options('*', corsMiddleware);
 
 // Redis Client instance for sessions ----------------------
-let redisClient = Redis.createClient(process.env.REDIS_URL ? process.env.REDIS_URL :
+// REDISCLOUD_URL Takes precedenece -- it's the free 30mb tier
+
+const envRedis = process.env.REDISCLOUD_URL ? process.env.REDISCLOUD_URL : process.env.REDIS_URL;
+let redisClient = Redis.createClient(envRedis ? envRedis :
   {
     host: 'localhost',
     port: 6379

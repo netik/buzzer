@@ -53,15 +53,25 @@ We need node first:
 Deploy
 =======
 
-Have git remotes setup:
+Have git remotes setup.
 
+```
   heroku-api	https://git.heroku.com/gobuzzyourself-api.git (fetch)
   heroku-api	https://git.heroku.com/gobuzzyourself-api.git (push)
   heroku-web-client	https://git.heroku.com/gobuzzyourself-web.git (fetch)
   heroku-web-client	https://git.heroku.com/gobuzzyourself-web.git (push)
+```
 
-then do:
+You do ths via:
+```
+  git remote add heroku-api https://git.heroku.com/gobuzzyourself-api.git
+  git remote add heroku-web-client https://git.heroku.com/gobuzzyourself-web.git (fetch)
+```
+...then do:
 
+```
    git push heroku-web-client master
    git push heroku-api master
+```
 
+Heroku should do the rest. 
