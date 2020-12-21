@@ -30,30 +30,32 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 
 const LatencyDisplay = (props) => {
   let icon;
-  
-  if (props.latency < 1000) {
-    icon = (<Signal1SVG height="20px" fill="green"/>);
+  let latency = props.latency;
+
+    icon = (<Signal1SVG height="20px" />);
+
+  if (latency <= 500) {
+    icon = (<Signal2SVG height="20px" />);
   }
-  if (props.latency < 800) {
-    icon = (<Signal2SVG height="20px" fill="green"/>);
+  if (latency <= 200) {
+    icon = (<Signal3SVG height="20px" />)
   }
-  if (props.latency < 500) {
-    icon = (<Signal3SVG height="20px" fill="green" />)
+  if (latency <= 100) {
+    icon = (<Signal4SVG height="20px" />);
   }
-  if (props.latency < 250) {
-    icon = (<Signal4SVG height="20px" fill="green" />);
-  }
-  if (props.latency < 250) {
-    icon = (<Signal5SVG height="20px" fill="green"  />);
+  if (latency <= 50) {
+    icon = (<Signal5SVG height="20px" />);
   }
 
   return (
-    <div>{icon} {props.latency} mS</div>
+    <span>
+      <div>{icon}&nbsp;&nbsp;&nbsp;{latency} mS</div>
+    </span>
     );
 }
 
 const NavBar = (props) => {
-  const [isOpen, setIsOpen] = useState(false);
+  const [isOpen, setIsOpen] = useState(false);  
   const [rightIsOpen, setRightIsOpen] = useState(false);
   const toggle = () => setIsOpen(!isOpen);
   const rightToggle =  () => setRightIsOpen(!rightIsOpen);
@@ -115,7 +117,7 @@ const NavBar = (props) => {
           {loggedInMenu}
           </NavbarText>
           <NavbarText style={{marginLeft: "30px"}}>
-          <LatencyDisplay latency={props.latency}/>
+            <LatencyDisplay latency={props.latency}/>
           </NavbarText>
         </Collapse>
       </Navbar>
