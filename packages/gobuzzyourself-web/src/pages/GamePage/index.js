@@ -32,6 +32,7 @@ const GamePage = (props) => {
         audioObj={props.audioObj} 
         audioLocked={props.audioLocked}
         setAudioLockedCallback={props.setAudioLockedCallback}
+        latency={props.latency}
       />
       {sockErrorComp}
       <DTHeader/>

@@ -62,6 +62,7 @@ function App() {
   const [buzzerDisabled, setBuzzerDisabled] = useState(true);
   const [user, setUser] = useState(null);
   const [scores, setScores] = useState(null);
+  const [latency, setLatency] = useState(0);
   const [socketWatchdog, setSocketWatchdog] = useState(0);
   
   // eslint-disable-next-line no-unused-vars
@@ -188,6 +189,15 @@ function App() {
         }
       });
 
+      s.on('pong', (ms) => {
+        // ms is occasionally undefined, guard against that.
+        if (ms) {
+          setLatency(ms);
+          console.log(`Pong: ${ms} latency`);
+          s.emit('pongpong', ms);
+        }
+      });
+
       // after all that, can we join?
       let prevUser;
       
@@ -219,6 +229,7 @@ function App() {
           audioObj={audioObj.current}
           audioLocked={audioLocked}
           setAudioLockedCallback={setAudioLocked}
+          latency={latency}
         />
       </Route>
       <Route exact path="/help/about">
@@ -234,6 +245,7 @@ function App() {
           audioObj={audioObj}
           audioLocked={audioLocked}
           setAudioLockedCallback={setAudioLocked}
+          latency={latency}
         />
       </Route>
       <Route exact path="/help/privacy">
@@ -249,6 +261,7 @@ function App() {
           audioObj={audioObj}
           audioLocked={audioLocked}
           setAudioLockedCallback={setAudioLocked}
+          latency={latency}
         />
       </Route>
       <Route exact path="/game">
@@ -264,6 +277,7 @@ function App() {
           audioObj={audioObj}
           audioLocked={audioLocked}
           setAudioLockedCallback={setAudioLocked}
+          latency={latency}
         />
       </Route>
       <Route exact path="/host">
@@ -279,6 +293,7 @@ function App() {
           audioObj={audioObj}
           audioLocked={audioLocked}
           setAudioLockedCallback={setAudioLocked}
+          latency={latency}
         />
       </Route>
       <Route exact path="/scores">
@@ -294,6 +309,7 @@ function App() {
           audioObj={audioObj}
           audioLocked={audioLocked}
           setAudioLockedCallback={setAudioLocked}
+          latency={latency}
         />
       </Route>
       <Route exact path="/logout">

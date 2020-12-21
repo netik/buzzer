@@ -18,9 +18,39 @@ import {
   NavbarText
 } from 'reactstrap';
 
+import {ReactComponent as Signal1SVG } from '../images/signal-1.svg';
+import {ReactComponent as Signal2SVG } from '../images/signal-2.svg';
+import {ReactComponent as Signal3SVG } from '../images/signal-3.svg';
+import {ReactComponent as Signal4SVG } from '../images/signal-4.svg';
+import {ReactComponent as Signal5SVG } from '../images/signal-5.svg';
+
 import InstallModal from './InstallModal';
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+
+const LatencyDisplay = (props) => {
+  let icon;
+  
+  if (props.latency < 1000) {
+    icon = (<Signal1SVG height="20px" fill="green"/>);
+  }
+  if (props.latency < 800) {
+    icon = (<Signal2SVG height="20px" fill="green"/>);
+  }
+  if (props.latency < 500) {
+    icon = (<Signal3SVG height="20px" fill="green" />)
+  }
+  if (props.latency < 250) {
+    icon = (<Signal4SVG height="20px" fill="green" />);
+  }
+  if (props.latency < 250) {
+    icon = (<Signal5SVG height="20px" fill="green"  />);
+  }
+
+  return (
+    <div>{icon} {props.latency} mS</div>
+    );
+}
 
 const NavBar = (props) => {
   const [isOpen, setIsOpen] = useState(false);
@@ -83,6 +113,9 @@ const NavBar = (props) => {
           </Nav>
           <NavbarText style={{padding:0}}>
           {loggedInMenu}
+          </NavbarText>
+          <NavbarText style={{marginLeft: "30px"}}>
+          <LatencyDisplay latency={props.latency}/>
           </NavbarText>
         </Collapse>
       </Navbar>
