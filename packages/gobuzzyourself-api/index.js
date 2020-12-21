@@ -19,6 +19,8 @@ const expressWinston = require('express-winston');
 const Redis = require('redis');
 const RedisStore = require('connect-redis')(session);
 
+const config = require('./config');
+
 // passport setup
 passport.use(
   new GraphQLLocalStrategy((email, password, done) => {
@@ -188,15 +190,13 @@ const data = {
   users: new Map(),
   scores: new Map(), // userid -> score mapping
   lastbuzz: undefined, // last known buzzed in
-  timeRemain: 60,
+  timeRemain: config.startingClock,
   clockRunning: false,
   lockout: true
 }
 
 // we start with a default of 60 seconds
 // but this can be changed in game.
-let maxTime = 60;
-
 const getData = () => ({
   timeRemain: data.timeRemain,
   clockRunning: data.clockRunning,
@@ -360,7 +360,7 @@ io.on('connection', (socket) => {
   socket.on('resetclock', () => {
     statObj.msg_resetclock++;
 
-    data.timeRemain = maxTime;
+    data.timeRemain = config.startingClock;
     data.clockRunning = false;
     data.lockout = true;
     io.emit('lockout', data.lockout);

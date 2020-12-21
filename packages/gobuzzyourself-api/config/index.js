@@ -1,5 +1,6 @@
 const config = {
+  startingClock: 60,
   timeStep: 5
 };
 
-export default config;
+module.exports = config;
