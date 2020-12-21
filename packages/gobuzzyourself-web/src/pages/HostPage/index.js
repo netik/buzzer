@@ -1,8 +1,8 @@
 import React from "react";
-import NavBar from "../components/NavBar";
-import DTHeader from "../components/DTHeader";
-import TimeClock from "../components/TimeClock";
-import ScoreBoard from "../components/ScoreBoard";
+import NavBar from "../../components/NavBar";
+import DTHeader from "../../components/DTHeader";
+import TimeClock from "../../components/TimeClock";
+import ScoreBoard from "../../components/ScoreBoard";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 
 import {

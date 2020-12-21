@@ -1,5 +1,6 @@
-import NavBar from "../components/NavBar";
-import LoginBox from "../components/LoginBox";
+import NavBar from "../../components/NavBar";
+import LoginBox from "../../components/LoginBox";
+
 import React from "react";
 import {
   Redirect
