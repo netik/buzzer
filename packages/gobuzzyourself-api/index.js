@@ -436,7 +436,7 @@ io.on('connection', (socket) => {
 
     data.scores.set(id, { 
       name: user.name,
-      score: score.score + 1,
+      score: score.score - 1,
       latency: score.latency
     });
 
