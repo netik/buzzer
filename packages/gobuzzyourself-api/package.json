@@ -10,6 +10,9 @@
   "author": "John Adams <jna@retina.net>",
   "license": "MIT",
   "dependencies": {
+    "apollo-client": "^2.6.10",
+    "apollo-server": "^2.19.0",
+    "apollo-server-express": "^2.19.0",
     "connect-redis": "^4.0.4",
     "express": "^4.17.1",
     "express-session": "^1.17.1",
@@ -17,10 +20,15 @@
     "express-winston": "^4.0.3",
     "graphql-passport": "^0.6.3",
     "npmlog-ts": "0.0.1",
+    "passport": "^0.4.1",
     "pug": "^2.0.4",
     "redis": "^3.0.2",
     "socketio": "1.0.0",
-    "uuid": "^8.0.0",
+    "uuid": "^8.3.2",
     "winston": "^3.2.1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/netik/buzzer"
   }
 }

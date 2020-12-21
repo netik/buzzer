@@ -2,27 +2,16 @@ const http = require('http')
 const express = require('express')
 const socketio = require('socket.io')
 const session = require('express-session');
-import { GraphQLLocalStrategy, buildContext } from 'graphql-passport';
-
-import express from 'express';
-import passport from 'passport';
-import { GraphQLLocalStrategy } from 'graphql-passport';
-import User from './User';
-
-passport.use(
-  new GraphQLLocalStrategy((email, password, done) => {
-    const users = User.getUsers();
-    const matchingUser = users.find(user => email === user.email && password === user.password);
-    const error = matchingUser ? null : new Error('no matching user');
-    done(error, matchingUser);
-  }),
-);
-
+const { GraphQLLocalStrategy, buildContext } = require('graphql-passport');
+const passport = require('passport');
+const UserDB = require('./api/User');
+const User = require('./api/User.js');
+const resolvers = require('./api/resolvers');
 
 const app = express();
 const server = http.Server(app);
 const io = socketio(server);
-const log = require('npmlog-ts')
+const { ApolloServer, gql } = require('apollo-server-express');
 
 const expressWinston = require('express-winston');
 const serviceLogger = require('./util/service_logger');
@@ -30,6 +19,17 @@ const logger = serviceLogger.logger('api');
 
 const Redis = require('redis');
 const RedisStore = require('connect-redis')(session);
+
+// passport setup
+passport.use(
+  new GraphQLLocalStrategy((email, password, done) => {
+    const users = UserDB.getUsers();
+    const matchingUser = users.find(user => email === user.email && password === user.password);
+    const error = matchingUser ? null : new Error('no matching user');
+    done(error, matchingUser);
+  }),
+);
+
 
 // Redis Client instance for sessions ----------------------
 let redisClient = Redis.createClient(process.env.REDIS_URL ? process.env.REDIS_URL :
@@ -79,12 +79,20 @@ const timeStep = 5;
 app.disable('x-powered-by');
 
 // setup apollo
-const server = new ApolloServer({
+const typeDefs = [User];
+console.log(typeDefs);
+
+const graphQLServer = new ApolloServer({
   typeDefs,
   resolvers,
-  context: ({ req, res }) => buildContext({ req, res }),
+  playground: {
+    endpoint: '/graphql',
+    settings: {
+      'editor.theme': 'dark'
+    }
+  },
+  context: ({ req, res }) => buildContext({ req, res })
 });
-
 
 // zero out stats
 var statObj = { 'connections' : 0,
@@ -109,7 +117,8 @@ process.on('uncaughtException', function (err) {
   console.error(err.stack)
   process.exit(1)})
 
-// this map stores all user and gameplay data
+// This map stores all user and game play state. It should probably be
+// moved to redis.
 let data = {
   users: new Map(),
   scores: new Map(), // userid -> score mapping
@@ -135,6 +144,8 @@ const getData = () => ({
 
 // Use express-session middleware for express
 app.use(sessionMiddleware);
+
+graphQLServer.applyMiddleware({ app });
 
 io.use((socket, next) => {
     sessionMiddleware(socket.request, {}, next);
@@ -214,13 +225,21 @@ io.on('connection', (socket) => {
   })
 
   socket.on('buzz', (user) => {
+    if (data.lockout) { 
+      // if the lockout is enabled, buzzing in does nothing.
+      global.logger.error(`buzz in while locked out from ${socket.id}`);
+      // maybe you didn't get the message the first time?
+      io.emit('lockout', data.lockout);
+      return;
+    }
+
     statObj.msg_buzz++;
     
     // there is a potential race condition here where someone buzzes in 
     // and we don't have data for them, like after a restart.
     const theUser = data.users.get(socket.id);
     if (!theUser) {
-      log.error(`invalid socket id on buzz ${socket.id}`);
+      global.logger.error(`invalid socket id on buzz ${socket.id}`);
       return;
     }
 

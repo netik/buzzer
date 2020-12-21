@@ -1,4 +1,4 @@
-import uuid from 'uuid/v4';
+const { v4: uuidv4 } = require('uuid');
 
 const resolvers = {
   Query: {
@@ -14,7 +14,7 @@ const resolvers = {
       }
 
       const newUser = {
-        id: uuid(),
+        id: uuidv4(),
         firstName,
         lastName,
         email,
@@ -36,4 +36,4 @@ const resolvers = {
   },
 };
 
-export default resolvers;
+module.exports = resolvers;

@@ -4,13 +4,24 @@
 
 A little buzzer app for running your own quizzes or game shows! Uses websockets to sent messages.
 
+## Package installs. 
+
+This is a multi-project and uses yarn workspaces. Do your package installs
+from the top-level directory only and not from within the package areas.
+
+You may need to set 
+```
+yarn config set workspaces-experimental true
+```
+to enable this feature, then go to the top-level and do `yarn install`
+
 ## Running the app
 
 You'll need [Node.js](https://nodejs.org) or [Docker](https://www.docker.com/) to run this
 application. For Node:
 
 ```
-npm install
+yarn install
 node index.js
 ```
 

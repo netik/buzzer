@@ -1,12 +1,12 @@
-import express from 'express';
-import session from 'express-session';
-import uuid from 'uuid/v4';
-import passport from 'passport';
-import { GraphQLLocalStrategy, buildContext } from 'graphql-passport';
-import { ApolloServer } from 'apollo-server-express';
-import User from './User';
-import typeDefs from './typeDefs';
-import resolvers from './resolvers';
+const express = require('express');
+const session = require ('express-session');
+const uuid from 'uuid/v4';
+const passport from 'passport';
+const { GraphQLLocalStrategy, buildContext } = require('graphql-passport');
+const { ApolloServer } = require('apollo-server-express');
+const User = require('./User');
+const { typeDefs } = require('./typeDefs');
+const { resolvers = require('./resolvers');
 
 const PORT = 4000;
 const SESSION_SECRECT = 'bad secret';

@@ -1,21 +1,26 @@
-const users = [
-  {
-    id: '1',
-    firstName: 'Maurice',
-    lastName: 'Moss',
-    email: 'maurice@moss.com',
-    password: 'abcdefg'
-  },
-  {
-    id: '2',
-    firstName: 'Roy',
-    lastName: 'Trenneman',
-    email: 'roy@trenneman.com',
-    password: 'imroy'
-  }
-];
+const { gql } = require('apollo-server-express');
 
-export default {
-  getUsers: () => users,
-  addUser: (user) => users.push(user),
-};
+const User = gql`
+  type User {
+    id: ID
+    firstName: String
+    lastName: String
+    email: String
+  }
+
+  type Query {
+    currentUser: User
+  }
+
+  type AuthPayload {
+    user: User
+  }
+
+  type Mutation {
+    signup(firstName: String!, lastName: String!, email: String!, password: String!): AuthPayload
+    login(email: String!, password: String!): AuthPayload
+    logout: Boolean
+  }
+`;
+
+module.exports = User;
