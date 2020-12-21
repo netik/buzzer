@@ -79,53 +79,49 @@ const HostPage = (props) => {
        style={{"margin":"10px"}}>
       <FontAwesomeIcon icon="plus-circle"/> Add Time
     </Button>
-    {' '}
     <Button 
       onClick={handleSubTime}
       color="primary" 
       style={{"margin":"10px"}}>
      <FontAwesomeIcon icon="minus-circle"/> Subtract Time
     </Button>
-    {' '}
-    <Button 
+    { !props.isRunning && (<Button 
       onClick={handleStartClock} 
       color="success" 
       style={{"margin":"10px"}}>
      <FontAwesomeIcon icon="play"/> Start Clock
     </Button>
-    {' '}
-    <Button 
+    )}
+    { props.isRunning && (<Button 
       onClick={handlePauseClock}
       color="danger"
       style={{"margin":"10px"}}>
       <FontAwesomeIcon icon="stop"/> Stop Clock
     </Button>
-    {' '}
+    )}
     <Button
       onClick={handleClear}
       color="info"
       style={{"margin":"10px"}}>
       <FontAwesomeIcon icon="circle"/> Clear Buzzes
     </Button>
-    {' '}
+    <Button
+      onClick={handleSendBuzzer}
+      color="danger"
+      style={{"margin":"10px"}}>
+      <FontAwesomeIcon icon="volume-up"/> Buzz Everyone
+    </Button>
     <Button
       onClick={handleResetClock}
       color="danger"
       style={{"margin":"10px"}}>
       <FontAwesomeIcon icon="trash"/> Reset Clock
     </Button>
-    {' '}
     <Button
       onClick={handleResetScores}
       color="danger"
       style={{"margin":"10px"}}>
       <FontAwesomeIcon icon="trash"/> Reset Scores
-    </Button>
-    <Button
-      onClick={handleSendBuzzer}
-      color="danger"
-      style={{"margin":"10px"}}>
-      <FontAwesomeIcon icon="volume-up"/> Buzz Everyone
     </Button>
     </Col>
     </Row>
