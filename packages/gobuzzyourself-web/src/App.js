@@ -162,6 +162,7 @@ function App() {
 
       s.on('scoreupdate', (data) => {
         console.log('scoreupdate');
+        console.log(data);
         const myMap = new Map(JSON.parse(data));
         setScores(myMap);
       });
@@ -196,6 +197,11 @@ function App() {
           console.log(`Pong: ${ms} latency`);
           s.emit('pongpong', ms);
         }
+      });
+    
+      s.on('kick', () => {
+        // we're getting kicked off.
+        window.location = "/";
       });
 
       // after all that, can we join?

@@ -18,41 +18,11 @@ import {
   NavbarText
 } from 'reactstrap';
 
-import {ReactComponent as Signal1SVG } from '../images/signal-1.svg';
-import {ReactComponent as Signal2SVG } from '../images/signal-2.svg';
-import {ReactComponent as Signal3SVG } from '../images/signal-3.svg';
-import {ReactComponent as Signal4SVG } from '../images/signal-4.svg';
-import {ReactComponent as Signal5SVG } from '../images/signal-5.svg';
-
 import InstallModal from './InstallModal';
 
+import LatencyDisplay from './LatencyDisplay';
+
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-
-const LatencyDisplay = (props) => {
-  let icon;
-  let latency = props.latency;
-
-  icon = (<Signal1SVG height="20px" />);
-
-  if (latency <= 500) {
-    icon = (<Signal2SVG height="20px" />);
-  }
-  if (latency <= 300) {
-    icon = (<Signal3SVG height="20px" />)
-  }
-  if (latency <= 200) {
-    icon = (<Signal4SVG height="20px" />);
-  }
-  if (latency <= 125) {
-    icon = (<Signal5SVG height="20px" />);
-  }
-
-  return (
-    <span>
-      <div>{icon}&nbsp;&nbsp;&nbsp;{latency} mS</div>
-    </span>
-    );
-}
 
 const NavBar = (props) => {
   const [isOpen, setIsOpen] = useState(false);  

@@ -21,7 +21,7 @@ const useKeyboardShortcut = (shortcutKeys, callback) => {
 
   if (!shortcutKeys.length)
     throw new Error(
-      "The first parameter to `useKeyboardShortcut` must contain atleast one `KeyboardEvent.key` string."
+      "The first parameter to `useKeyboardShortcut` must contain at least one `KeyboardEvent.key` string."
     );
 
   if (!callback || typeof callback !== "function")

@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import LatencyDisplay from './LatencyDisplay';
 
 import {
   Container,
@@ -77,6 +78,7 @@ const ScoreBoard = (props) => {
             </h1>
             <h2>{key[1].name}</h2>
             {hostButtons}
+            <LatencyDisplay latency={key[1].latency}/>
           </CardBody>
         );
     

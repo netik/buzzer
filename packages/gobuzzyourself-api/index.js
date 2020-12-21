@@ -12,7 +12,7 @@ const app = express();
 const bodyParser = require('body-parser');
 
 const server = http.Server(app);
-const io = socketio(server, {pingInterval: 5000});
+const io = socketio(server, {pingInterval: 1000});
 
 const { ApolloServer, gql } = require('apollo-server-express');
 const expressWinston = require('express-winston');
@@ -184,7 +184,7 @@ process.on('uncaughtException', function (err) {
 
 // This map stores all user and game play state. It should probably be
 // moved to redis.
-let data = {
+const data = {
   users: new Map(),
   scores: new Map(), // userid -> score mapping
   lastbuzz: undefined, // last known buzzed in
@@ -251,6 +251,19 @@ app.get('/status', function(req, res){
   res.send(JSON.stringify(statObj) + "\n");
 });
 
+const lookupUser = (id) => {
+  const theUser = data.users.get(id);
+  const theScore = data.scores.get(id);
+
+  // the caller is responsible for handling the user not existing.
+  return { user: theUser, score: theScore };
+}
+
+const broadcastScores = () => {
+  let scoreTransit = JSON.stringify(Array.from(data.scores));
+  io.emit('scoreupdate', scoreTransit);
+};
+
 io.on('connection', (socket) => {
   var clientIP = socket.request.connection.remoteAddress;
   global.logger.info(`${clientIP} - (socket ${socket.id} / session ${socket.request.session.id}) connected`);
@@ -272,20 +285,29 @@ io.on('connection', (socket) => {
     statObj.msg_join++;
 
     data.users.set(socket.id, user);
-    data.scores.set(socket.id, { name: user.name, score: 0 });
+    data.scores.set(socket.id, { name: user.name, score: 0, latency: 0 });
 
     // tell them it worked
     socket.emit('joined', user);
 
     // tell everyone else who is here
     global.logger.info(`${socket.id}: ${user.name} joined!`)
-    let scoreTransit = JSON.stringify(Array.from(data.scores));
-    io.emit('scoreupdate', scoreTransit);
+
+    broadcastScores();
 
     // update this user on the current world-state
     socket.emit('lockout', data.lockout);
     socket.emit('tick', { timeRemain: data.timeRemain, clockRunning: data.clockRunning });
   })
+
+  socket.on('pongpong', (payload) => {
+    const { user, score } = lookupUser(socket.id);
+  
+    if (user && score) {
+      data.scores.set(socket.id, { name: user.name, score: score.score, latency: payload});
+      broadcastScores();
+    } 
+  });
 
   socket.on('buzz', (user) => {
     if (data.lockout) { 
@@ -300,11 +322,7 @@ io.on('connection', (socket) => {
     
     // there is a potential race condition here where someone buzzes in 
     // and we don't have data for them, like after a restart.
-    const theUser = data.users.get(socket.id);
-    if (!theUser) {
-      global.logger.error(`invalid socket id on buzz ${socket.id}`);
-      return;
-    }
+    const { user: theUser } = lookupUser(socket.id);
 
     // debounce
     if (data.lastbuzz == socket.id) {
@@ -320,8 +338,8 @@ io.on('connection', (socket) => {
     io.emit('tick', { timeRemain: data.timeRemain, clockRunning: data.clockRunning });
 
     data.lastbuzz = socket.id;
-    io.emit('lastbuzz', { id: data.lastbuzz, name: data.users.get(socket.id).name });
-    global.logger.info(`${socket.id}: ${data.users.get(socket.id).name} buzzed in!`);
+    io.emit('lastbuzz', { id: data.lastbuzz, name: theUser.name });
+    global.logger.info(`${socket.id}: ${theUser.name} buzzed in!`);
   })
 
   socket.on('getscores', () => {
@@ -360,8 +378,7 @@ io.on('connection', (socket) => {
       data.scores.set(elem[0], elem[1]);
     }
 
-    let scoreTransit = JSON.stringify(Array.from(data.scores));
-    io.emit('scoreupdate', scoreTransit);
+    broadcastScores();
   });
 
   socket.on('startclock', () => {
@@ -403,34 +420,27 @@ io.on('connection', (socket) => {
   })
 
   socket.on('scoreup', (id) => {
-    let oldobj = data.scores.get(id);
-    if (!oldobj) { 
-      global.logger.info(`scoreup: can't find ${id}`);
-      return 
-    }
+    const { user, score } = lookupUser(id);
+
     data.scores.set(id, { 
-      name: oldobj.name,
-      score: oldobj.score + 1 
+      name: user.name,
+      score: score.score + 1,
+      latency: score.latency
     });
 
-    let scoreTransit = JSON.stringify(Array.from(data.scores));
-    io.emit('scoreupdate', scoreTransit);
+    broadcastScores();
   });
   
   socket.on('scoredown', (id) => {
-    let oldobj = data.scores.get(id);
-    if (!oldobj) { 
-      global.logger.info(`scoredown: can't find ${id}`);
-      return 
-    }
+    const { user, score } = lookupUser(id);
 
     data.scores.set(id, { 
-      name: oldobj.name,
-      score: oldobj.score - 1 
+      name: user.name,
+      score: score.score + 1,
+      latency: score.latency
     });
-    
-    let scoreTransit = JSON.stringify(Array.from(data.scores));
-    io.emit('scoreupdate', scoreTransit);
+
+    broadcastScores();
   });
   
   socket.on('soundbuzz', () => {
@@ -444,8 +454,7 @@ io.on('connection', (socket) => {
     data.users.delete(socket.id);
     data.scores.delete(socket.id);
     
-    let scoreTransit = JSON.stringify(Array.from(data.scores));
-    io.emit('scoreupdate', scoreTransit);
+    broadcastScores();
 
     global.logger.info(`${socket.request.connection.remoteAddress} - (socket ${socket.id} / session ${socket.request.session.id}) disconnected`);
   });
