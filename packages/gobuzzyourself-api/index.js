@@ -10,7 +10,7 @@ const resolvers = require('./api/resolvers');
 
 const app = express();
 const server = http.Server(app);
-const io = socketio(server);
+const io = socketio(server, {pingInterval: 5000});
 const { ApolloServer, gql } = require('apollo-server-express');
 
 const expressWinston = require('express-winston');

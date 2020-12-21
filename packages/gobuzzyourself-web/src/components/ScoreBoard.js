@@ -72,10 +72,10 @@ const ScoreBoard = (props) => {
         // build the player card
         let playerCard = (
           <CardBody style={style}>
-            <h1>{key[1].name}</h1>
             <h1>
               {key[1].score}
             </h1>
+            <h2>{key[1].name}</h2>
             {hostButtons}
           </CardBody>
         );
